@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community UI Demo</title>
+    <script src="app.js" type="module"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container">
+        <article class="post-container">
+            <header class="post-header">
+                <span class="category">자유게시판</span>
+                <h1 class="post-title">커뮤니티 대댓글 시스템, 어떻게 구현하나요?</h1>
+                <div class="post-meta">
+                    <span class="author">개발자지망생</span>
+                    <span class="date">2024.05.20 14:30</span>
+                    <span class="views">조회 1.2k</span>
+                </div>
+            </header>
+            
+            <div class="post-content">
+                <p>DB 설계부터 막막하네요. 인접 리스트랑 경로 열거 중에 뭘 써야 할까요?</p>
+                <p>프론트엔드에서 트리 구조로 어떻게 렌더링하는지도 궁금합니다.</p>
+            </div>
+            
+            <div class="post-actions">
+                <button class="btn-like">👍 좋아요 12</button>
+                <button class="btn-share">🔗 공유</button>
+            </div>
+        </article>
+
+        <section class="comment-input-section">
+            <h3>댓글 <span class="comment-count">3</span></h3>
+            <div class="input-wrapper">
+                <textarea placeholder="댓글을 남겨보세요."></textarea>
+                <button class="btn-submit">등록</button>
+            </div>
+        </section>
+
+        <div class="comment-list" id="commentList">
+            <!-- comments -->
+        </div>
+    </div>
+
+</body>
+</html>
