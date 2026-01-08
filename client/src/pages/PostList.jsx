@@ -44,7 +44,6 @@ function PostList() {
           </li>
         ))}
       </ul>
-      <button></button>
     </div>
   );
 }

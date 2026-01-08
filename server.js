@@ -68,6 +68,44 @@ app.post("/api/posts", async (req, res) =>{
   }
 })
 
+app.post("/api/comments", async (req, res) => {
+  try{
+    const { postId, content, author, parentCommentId } = req.body;
+    let parentComment = null;
+    if (parentCommentId) {
+      parentComment = await Comment.findById(parentCommentId);
+      if (!parentComment) {
+        return res.status(404).json({ error: "부모 댓글을 찾을 수 없습니다." });
+      }
+    }
+
+    const depth = parentComment ? parentComment.depth + 1 : 0;
+
+    const newComment = new Comment({
+      postId,
+      content,
+      author: author || { id: "guest", nickname: "익명" }, // 임시 작성자
+      parentCommentId: parentCommentId || null,
+      depth,
+    });
+
+    // 3. Path 계산 및 업데이트
+    let newPath = newComment._id.toString();
+    if (parentComment) {
+      newPath = `${parentComment.path},${newComment._id}`;
+    }
+
+    newComment.path = newPath;
+    await newComment.save();
+
+    res.status(201).json(newComment);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "댓글 저장 실패" });
+  }
+});
+
 const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`🚀 서버 작동 중: http://localhost:${PORT}`);
