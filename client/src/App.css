@@ -1,11 +1,128 @@
-* {
-    box-sizing: border-box;
-    margin: 0;
+.app-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  
+  background-color: var(--bg-container);
+  
+  min-height: 100vh;
+  box-shadow: 0 0 20px rgba(0,0,0,0.05);
 }
 
-body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    background-color: #f8f9fa;
-    color: #333;
-    line-height: 1.6;
+.post-container {
+  margin-bottom: 40px;
+  padding-bottom: 30px;
+  
+  border-bottom: 1px solid var(--border-color);
+}
+
+.category {
+  font-size: 0.9rem;
+  color: #495057;
+  background-color: #e9ecef;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.post-title {
+  margin: 15px 0;
+  font-size: 1.8rem;
+  
+  color: var(--text-main);
+}
+
+.post-meta {
+  font-size: 0.9rem;
+  
+  color: var(--text-sub);
+  
+  margin-bottom: 30px;
+}
+
+.post-meta span {
+  margin-right: 10px;
+}
+
+.post-content {
+  font-size: 1.1rem;
+  margin-bottom: 30px;
+  min-height: 100px;
+  line-height: 1.8;
+}
+
+/* --- 댓글 입력창 스타일 --- */
+.comment-input-section {
+  margin-bottom: 30px;
+}
+
+.comment-input-section h3 {
+  margin-bottom: 15px;
+  font-size: 1.2rem;
+}
+
+textarea {
+  width: 100%;
+  padding: 12px;
+  
+  border: 1px solid var(--border-color);
+  background-color: var(--input-bg);
+  color: var(--text-main);
+  
+  border-radius: 6px;
+  resize: none;
+  font-size: 1rem;
+  margin-bottom: 10px;
+  font-family: inherit;
+}
+
+textarea:focus {
+  outline: none;
+  border-color: #339af0;
+}
+
+button {
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+/* --- 댓글 리스트 & 계층형 구조 --- */
+.comment-list {
+  padding-top: 20px;
+}
+
+.comment-item {
+  padding: 15px 0;
+  
+  border-bottom: 1px solid var(--border-color);
+  
+  display: flex;
+}
+
+/* Depth(깊이) 스타일 */
+.depth-0 { margin-left: 0; }
+.depth-1, .depth-2 { 
+  margin-left: 40px; 
+  
+  background-color: rgba(128, 128, 128, 0.1); 
+  
+  padding: 15px; 
+  border-radius: 8px; 
+  border-bottom: none; 
+  margin-bottom: 10px;
+}
+.depth-2 { margin-left: 80px; }
+
+.comment-header strong {
+  margin-right: 8px;
+  
+  color: var(--text-main);
+}
+
+.comment-body {
+  font-size: 1rem;
+  
+  color: var(--text-main);
+  
+  white-space: pre-line;
 }

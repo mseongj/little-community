@@ -14,7 +14,7 @@ function PostList() {
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-        <h1>커뮤니티 게시판</h1>
+        <h1>일간베스트</h1>
         
         {/* ✅ 글쓰기 버튼 추가 */}
         <Link to="/posts/create">
@@ -35,7 +35,7 @@ function PostList() {
         {posts.map(post => (
           <li key={post._id} style={{ borderBottom: '1px solid #eee', padding: '10px 0' }}>
             {/* 클릭하면 상세 페이지로 이동 */}
-            <Link to={`/posts/${post._id}`} style={{ textDecoration: 'none', color: 'black' }}>
+            <Link to={`/posts/${post._id}`} style={{ textDecoration: 'none'}}>
               <h3>{post.title}</h3>
               <span style={{ color: '#888' }}>
                 {post.author.nickname} · {new Date(post.createdAt).toLocaleDateString()}
