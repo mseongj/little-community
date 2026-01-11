@@ -1,20 +1,37 @@
+
 import { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import PostList from './pages/PostList';     // 목록 페이지 불러오기
-import PostDetail from './pages/PostDetail'; // 상세 페이지 불러오기
-import PostCreate from './pages/PostCreate';
-import './App.css'; // (선택사항) 스타일
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import PostList from './pages/PostList';     // 목록 페이지
+import PostDetail from './pages/PostDetail'; // 상세 페이지
+import PostCreate from './pages/PostCreate'; // 글쓸기 페이지
+import LoginPage from './pages/LoginPage'; // 로그인 페이지
+import './App.css'; // 스타일
 
 function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
 
-  useEffect(() => {
-    if (isDarkMode){
-      document.body.classList.add('dark-mode');
-    } else {
-      document.body.classList.remove('dark-mode');
+  const [user, setUser] = useState(() => {
+    // 컴포넌트가 처음 생성될 때 딱 한 번만 실행됨
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      return JSON.parse(storedUser); // 초기값으로 설정
     }
-  }, [isDarkMode])
+    return null; // 없으면 null
+  });
+
+  // Handle dark mode changes
+  useEffect(() => {
+    if (isDarkMode) document.body.classList.add('dark-mode');
+    else document.body.classList.remove('dark-mode');
+  }, [isDarkMode]);
+
+  // 3. 로그아웃 함수
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    setUser(null);
+    alert("로그아웃 되었습니다.");
+  };
 
   return (
     <BrowserRouter>
@@ -46,17 +63,28 @@ function App() {
           >
             {isDarkMode ? '☀️ 라이트 모드' : '🌙 다크 모드'}
           </button>
+
+            {user ? (
+              <>
+                <span style={{ color: 'var(--text-main)', fontWeight: 'bold' }}>{user.nickname}님</span>
+                <button onClick={handleLogout} style={{ padding: '6px 12px', cursor: 'pointer', backgroundColor: '#ff6b6b', color: 'white', border: 'none', borderRadius: '4px' }}>
+                  로그아웃
+                </button>
+              </>
+            ) : (
+              <Link to="/login">
+                <button style={{ padding: '6px 12px', cursor: 'pointer', backgroundColor: 'var(--primary-color)', color: 'white', border: 'none', borderRadius: '4px' }}>
+                  로그인
+                </button>
+              </Link>
+            )}
         </header>
 
-        {/* 주소에 따라 화면이 바뀌는 부분 */}
         <Routes>
-          {/* 1. 메인 화면 (목록) */}
           <Route path="/" element={<PostList />} />
-          
-          {/* 2. 상세 화면 (주소 뒤에 id가 붙음) */}
           <Route path="/posts/:id" element={<PostDetail />} />
-
           <Route path="/posts/create" element={<PostCreate />} />
+          <Route path="/login" element={<LoginPage setUser={setUser} />} />
         </Routes>
       </div>
     </BrowserRouter>

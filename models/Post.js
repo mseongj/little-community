@@ -9,7 +9,7 @@ const postSchema = new mongoose.Schema(
       nickname: String,
     },
     views: { type: Number, default: 0 },
-    likes: { type: Number, default: 0 },
+    likes: { type: [String], default: [] },
   },
   { timestamps: true }
 );

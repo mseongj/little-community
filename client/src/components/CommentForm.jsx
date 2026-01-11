@@ -1,7 +1,9 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 // props로 postId와 부모댓글ID(선택), 그리고 작성이 끝났을 때 실행할 함수(onSuccess)를 받습니다.
 function CommentForm({ postId, parentCommentId = null, onSuccess }) {
+  const navigate = useNavigate();
   const [content, setContent] = useState("");
 
   const handleSubmit = async () => {
@@ -10,15 +12,25 @@ function CommentForm({ postId, parentCommentId = null, onSuccess }) {
       return;
     }
     
+    // 로컬 스토리지에서 토큰 꺼내기
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("로그인이 필요합니다.");
+      navigate('/login'); // 로그인 페이지로 쫓아냄
+      return;
+    }
+
     try {
       const response = await fetch("http://localhost:3000/api/comments", {
         method: "POST",
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify({
           postId,
           content,
           parentCommentId, // 이게 있으면 대댓글, 없으면 그냥 댓글
-          author: { id: "user_1", nickname: "테스트유저" } // 로그인 기능 없으니 하드코딩
         }),
       });
 

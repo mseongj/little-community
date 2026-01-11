@@ -7,17 +7,28 @@ function PostCreate() {
   const [content, setContent] = useState("");
 
   const handleSubmit = async () => {
+    if(!title || !content) {
+      alert("제목과 내용을 입력해주세요.");
+      return;
+    }
+
+    // 로컬 스토리지에서 토큰 꺼내기
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("로그인이 필요합니다.");
+      navigate('/login'); // 로그인 페이지로 쫓아냄
+      return;
+    }
     try {
       const response = await fetch("http://localhost:3000/api/posts", {
         method: "POST",
-        // 1. headers는 JSON.stringify 하지 않고 객체 그대로 넣습니다.
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
           title: title,
           content: content,
-          // author는 백엔드에서 처리하거나, 여기서 보내더라도 백엔드 로직에 맞게 조정
         }),
       });
 
@@ -26,8 +37,11 @@ function PostCreate() {
         console.log("작성 성공");
         navigate('/'); 
       } else {
-        console.error("작성 실패");
-        alert("글 작성에 실패했습니다.");
+        const data = await response.json();
+        alert(data.error || "글 작성 실패");
+        if (response.status === 401 || response.status === 403) {
+          navigate('/login'); // 인증 실패시 로그인으로 이동
+        }
       }
       
     } catch (error) {
