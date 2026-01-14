@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.966.0",
     "argon2": "^0.44.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
@@ -7,7 +8,9 @@
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
     "mongodb": "^7.0.0",
-    "mongoose": "^9.1.2"
+    "mongoose": "^9.1.2",
+    "multer": "^2.0.2",
+    "multer-s3": "^3.0.1"
   },
   "name": "little-community",
   "version": "1.0.0",

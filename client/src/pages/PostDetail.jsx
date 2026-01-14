@@ -102,7 +102,7 @@ function PostDetail() {
            </span>
         </div>
 
-        <div className="post-content" dangerouslySetInnerHTML={{ __html: post.content }} />
+        <div className="post-content" dangerouslySetInnerHTML={{ __html: post.content }} style={{width:'100%'}}/>
       </article>
 
       {/* 최상위 댓글 작성 폼 (게시글 바로 밑) */}

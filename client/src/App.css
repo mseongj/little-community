@@ -51,6 +51,10 @@
   line-height: 1.8;
 }
 
+.post-content img {
+  max-width: 100%;
+}
+
 /* --- 댓글 입력창 스타일 --- */
 .comment-input-section {
   margin-bottom: 30px;
@@ -60,6 +64,7 @@
   margin-bottom: 15px;
   font-size: 1.2rem;
 }
+
 
 textarea {
   width: 100%;

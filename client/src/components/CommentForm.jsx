@@ -46,7 +46,7 @@ function CommentForm({ postId, parentCommentId = null, onSuccess }) {
   };
 
   return (
-    <div style={{ marginTop: "10px", padding: "10px", background: "#f8f9fa", borderRadius: "5px" }}>
+    <div style={{ marginTop: "10px", padding: "10px", background: "var(--bg-body)", borderRadius: "5px" }}>
       <textarea
         style={{ width: "100%", height: "60px", padding: "8px", border: "1px solid #ddd", borderRadius: "4px" }}
         placeholder={parentCommentId ? "답글을 입력하세요..." : "댓글을 남겨보세요."}

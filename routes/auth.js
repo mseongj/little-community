@@ -62,7 +62,8 @@ router.post("/login", async (req, res) => {
     // 변수에 담아서 클라이언트에게 보내줘야 합니다.
     const token = jwt.sign(
       { userId: existingUser._id },
-      "비밀키", // 나중엔 process.env.JWT_SECRET 으로 바꿀 예정
+      process.env.JWT_SECRET,
+      // "비밀키", // 나중엔 process.env.JWT_SECRET 으로 바꿀 예정
       { expiresIn: "1h" }
     );
 
