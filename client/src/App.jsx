@@ -5,6 +5,7 @@ import PostList from './pages/PostList';     // 목록 페이지
 import PostDetail from './pages/PostDetail'; // 상세 페이지
 import PostCreate from './pages/PostCreate'; // 글쓸기 페이지
 import LoginPage from './pages/LoginPage'; // 로그인 페이지
+import SignupPage from './pages/SignupPage';
 import './App.css'; // 스타일
 
 function App() {
@@ -85,6 +86,7 @@ function App() {
           <Route path="/posts/:id" element={<PostDetail />} />
           <Route path="/posts/create" element={<PostCreate />} />
           <Route path="/login" element={<LoginPage setUser={setUser} />} />
+          <Route path="/signup" element={<SignupPage />} />
         </Routes>
       </div>
     </BrowserRouter>

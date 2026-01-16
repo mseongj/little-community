@@ -26,30 +26,51 @@ app.use("/api/upload", uploadRoutes);
 
 // --- API 엔드포인트 ---
 
-// 1. 게시글 목록 조회
-app.get("/api/posts", async (req, res) => {
+app.get(`/api/posts`, async (req, res) => {
   try {
+    const page = Number(req.query.page) || 1;
+    const limit = 10;
+    const offset = (page - 1) * limit;
+
+    const totalPosts = await Post.countDocuments();
+    const totalPages = Math.ceil(totalPosts / limit);
+
     const posts = await Post.find()
       .sort({ createdAt: -1 })
-      .select("title author createdAt views");
-    res.json(posts);
+      .select("title author createdAt views likes")
+      .limit(limit).skip(offset);
+
+    res.json({
+      posts,
+      currentPage: page,
+      totalPages,
+      totalPosts
+    });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "에러 발생" });
+    res.status(500).json({error: "에러 발생"})
   }
 });
 
 // 2. 상세 조회
 app.get("/api/posts/:id", async (req, res) => {
   try {
-    const postId = req.params.id;
-    const post = await Post.findById(postId);
-    const comments = await Comment.find({ postId }).sort({ path: 1 }).lean();
+    const { id } = req.params;
+    const post = await Post.findByIdAndUpdate(
+      id,
+      { $inc: { views: 1 } }, // views를 1 더해라
+      { new: true } // 업데이트된 최신 데이터를 리턴해라 (안 쓰면 옛날 거 줌)
+    )
+    if (!post) {
+      return res.status(404).json({ error: "게시글을 찾을 수 없습니다." });
+    }
+    const comments = await Comment.find({ postId: id}).sort({ createdAt: 1 });
 
     res.json({ post, comments });
+
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "에러 발생" });
+    res.status(500).json({ error: "상세 조회 실패" });
   }
 });
 

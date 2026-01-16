@@ -4,12 +4,18 @@ import { Link } from 'react-router-dom';
 function PostList() {
   const [posts, setPosts] = useState([]);
 
+  const [page, setPage] = useState(1);       // 현재 페이지 (기본 1)
+  const [totalPages, setTotalPages] = useState(0); // 전체 페이지 개수
+
   useEffect(() => {
-    // 백엔드 목록 API 호출
-    fetch('http://localhost:3000/api/posts')
+    fetch(`http://localhost:3000/api/posts?page=${page}`)
       .then(res => res.json())
-      .then(data => setPosts(data));
-  }, []);
+      .then(data => {
+        setPosts(data.posts); 
+        setTotalPages(data.totalPages);
+      })
+      .catch((err) => console.error("불러오기 실패:", err));
+  }, [page]);
 
   return (
     <div>
@@ -31,19 +37,65 @@ function PostList() {
           </button>
         </Link>
       </div>
-      <ul>
-        {posts.map(post => (
-          <li key={post._id} style={{ borderBottom: '1px solid #eee', padding: '10px 0' }}>
-            {/* 클릭하면 상세 페이지로 이동 */}
-            <Link to={`/posts/${post._id}`} style={{ textDecoration: 'none'}}>
-              <h3>{post.title}</h3>
-              <span style={{ color: '#888' }}>
-                {post.author.nickname} · {new Date(post.createdAt).toLocaleDateString()}
-              </span>
+      {/* 게시글 리스트 렌더링 */}
+      <div className="post-list">
+        {posts.map((post) => (
+          <div key={post._id} style={{ border: '1px solid #ddd', padding: '15px', marginBottom: '10px', borderRadius: '8px', background: 'var(--bg-container)' }}>
+            <Link to={`/posts/${post._id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+              <h3 style={{ margin: '0 0 10px 0', color: 'var(--text-main)' }}>{post.title}</h3>
             </Link>
-          </li>
+            <div style={{ fontSize: '0.85rem', color: '#666', display: 'flex', gap: '10px' }}>
+              <span>✍️ {post.author.nickname}</span>
+              <span>👀 {post.views}</span>
+              <span>👍 {post.likes ? post.likes.length : 0}</span>
+              <span>📅 {new Date(post.createdAt).toLocaleDateString()}</span>
+            </div>
+          </div>
         ))}
-      </ul>
+      </div>
+
+      {/* 3. 페이지네이션 버튼 영역 */}
+      <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '30px' }}>
+        
+        {/* < 이전 버튼 */}
+        <button 
+          onClick={() => setPage(page - 1)} 
+          disabled={page === 1}
+          style={{ padding: '5px 10px', cursor: 'pointer' }}
+        >
+          &lt; 이전
+        </button>
+
+        {/* 페이지 번호들 (1, 2, 3...) */}
+        {/* Array.from({ length: 5 }) -> [undefined, undefined, ...] 5칸짜리 배열 생성 */}
+        {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+          <button
+            key={pageNum}
+            onClick={() => setPage(pageNum)}
+            style={{
+              padding: '5px 12px',
+              cursor: 'pointer',
+              border: '1px solid #ddd',
+              borderRadius: '4px',
+              // 현재 페이지는 색깔 다르게!
+              background: page === pageNum ? 'var(--primary-color)' : 'white',
+              color: page === pageNum ? 'white' : 'black',
+              fontWeight: page === pageNum ? 'bold' : 'normal'
+            }}
+          >
+            {pageNum}
+          </button>
+        ))}
+
+        {/* 다음 > 버튼 */}
+        <button 
+          onClick={() => setPage(page + 1)} 
+          disabled={page === totalPages}
+          style={{ padding: '5px 10px', cursor: 'pointer' }}
+        >
+          다음 &gt;
+        </button>
+      </div>
     </div>
   );
 }
