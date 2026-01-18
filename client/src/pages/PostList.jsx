@@ -7,15 +7,31 @@ function PostList() {
   const [page, setPage] = useState(1);       // 현재 페이지 (기본 1)
   const [totalPages, setTotalPages] = useState(0); // 전체 페이지 개수
 
+  const [keyword, setKeyword] = useState("");      // 입력창 값
+  const [searchQuery, setSearchQuery] = useState(""); // 실제 검색 요청 보낼 값
+
   useEffect(() => {
-    fetch(`http://localhost:3000/api/posts?page=${page}`)
-      .then(res => res.json())
-      .then(data => {
-        setPosts(data.posts); 
+    // 2. URL에 keyword 파라미터 추가
+    // searchQuery가 비어있으면 그냥 전체 조회, 있으면 검색 조회
+    fetch(`http://localhost:3000/api/posts?page=${page}&keyword=${searchQuery}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setPosts(data.posts);
         setTotalPages(data.totalPages);
       })
-      .catch((err) => console.error("불러오기 실패:", err));
-  }, [page]);
+      .catch((err) => console.error(err));
+  }, [page, searchQuery]);
+
+  // 검색 버튼 클릭 핸들러
+  const handleSearch = () => {
+    setPage(1); // 검색하면 1페이지로 돌아가야 함
+    setSearchQuery(keyword); // 입력창의 값을 실제 쿼리로 적용
+  };
+  
+  // 엔터키 처리
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') handleSearch();
+  }
 
   return (
     <div>
@@ -37,6 +53,24 @@ function PostList() {
           </button>
         </Link>
       </div>
+      {/* 검색창 UI 추가 */}
+      <div style={{ marginBottom: '20px', display: 'flex', gap: '10px' }}>
+        <input 
+          type="text" 
+          placeholder="제목이나 내용으로 검색" 
+          value={keyword}
+          onChange={(e) => setKeyword(e.target.value)}
+          onKeyDown={handleKeyDown}
+          style={{ padding: '8px', flex: 1, border: '1px solid #ddd', borderRadius: '4px' }}
+        />
+        <button 
+          onClick={handleSearch}
+          style={{ padding: '8px 16px', background: '#333', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+        >
+          검색
+        </button>
+      </div>
+
       {/* 게시글 리스트 렌더링 */}
       <div className="post-list">
         {posts.map((post) => (
@@ -54,7 +88,7 @@ function PostList() {
         ))}
       </div>
 
-      {/* 3. 페이지네이션 버튼 영역 */}
+      {/* 페이지네이션 버튼 영역 */}
       <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '30px' }}>
         
         {/* < 이전 버튼 */}
