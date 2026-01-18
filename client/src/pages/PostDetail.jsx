@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import CommentForm from '../components/CommentForm';
+import { useNavigate } from 'react-router-dom'; // navigate 추가
 
-function PostDetail() {
+function PostDetail({ user }) {
+  const navigate = useNavigate();
   const { id } = useParams(); // URL에서 id 가져오기
   const [data, setData] = useState(null);
 
@@ -12,7 +14,7 @@ function PostDetail() {
   const [likesCount, setLikesCount] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
 
-  const user = JSON.parse(localStorage.getItem("user"));
+  // const user = JSON.parse(localStorage.getItem("user"));
 
   // 데이터 불러오는 함수를 따로 뺌 (댓글 작성 후 다시 불러오기 위해)
   const fetchPostData = () => {
@@ -71,6 +73,36 @@ function PostDetail() {
   if (!data) return <div>로딩 중...</div>;
   const { post, comments } = data;
 
+  // 삭제 핸들러
+  const handleDelete = async () => {
+    if (!window.confirm("정말 삭제하시겠습니까? 복구할 수 없습니다.")) return;
+
+    try {
+      const response = await fetch(`http://localhost:3000/api/posts/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}` // 토큰 필수!
+        }
+      });
+
+      if (response.ok) {
+        alert("삭제되었습니다.");
+        navigate('/'); // 목록으로 이동
+      } else {
+        const data = await response.json();
+        alert(data.error || "삭제 실패");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("에러 발생");
+    }
+  };
+
+  if (!post) return <div>로딩 중...</div>;
+
+  // const isOwner = user && post.author && user.id === post.author;
+  const isOwner = user.id === post.author.id;
+
   return (
     <div>
       <Link to="/">← 목록으로 돌아가기</Link>
@@ -113,6 +145,23 @@ function PostDetail() {
           onSuccess={() => fetchPostData()} // 작성 완료되면 목록 새로고침
         />
       </section>
+      
+      {isOwner && (
+         <div style={{ display: 'flex', gap: '10px', marginTop: '20px', justifyContent: 'flex-end' }}>
+           <button 
+             onClick={() => navigate(`/posts/edit/${id}`)} // 수정 페이지로 이동
+             style={{ padding: '8px 16px', cursor: 'pointer' }}
+           >
+             수정
+           </button>
+           <button 
+             onClick={handleDelete}
+             style={{ padding: '8px 16px', background: 'red', color: 'white', border: 'none', cursor: 'pointer' }}
+           >
+             삭제
+           </button>
+         </div>
+       )}
       
       {/* 댓글 목록 */}
       <div className="comment-list">

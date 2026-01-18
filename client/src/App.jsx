@@ -6,6 +6,7 @@ import PostDetail from './pages/PostDetail'; // 상세 페이지
 import PostCreate from './pages/PostCreate'; // 글쓸기 페이지
 import LoginPage from './pages/LoginPage'; // 로그인 페이지
 import SignupPage from './pages/SignupPage';
+import PostEdit from './pages/PostEdit';
 import './App.css'; // 스타일
 
 function App() {
@@ -26,7 +27,7 @@ function App() {
     else document.body.classList.remove('dark-mode');
   }, [isDarkMode]);
 
-  // 3. 로그아웃 함수
+  // 로그아웃 함수
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
@@ -83,9 +84,10 @@ function App() {
 
         <Routes>
           <Route path="/" element={<PostList />} />
-          <Route path="/posts/:id" element={<PostDetail />} />
+          <Route path="/posts/:id" element={<PostDetail user={user}/>} />
           <Route path="/posts/create" element={<PostCreate />} />
-          <Route path="/login" element={<LoginPage setUser={setUser} />} />
+          <Route path='/posts/edit/:id' element={<PostEdit />} />
+          <Route path="/login" element={<LoginPage setUser={setUser}/>} />
           <Route path="/signup" element={<SignupPage />} />
         </Routes>
       </div>

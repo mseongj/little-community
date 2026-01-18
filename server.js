@@ -116,6 +116,60 @@ app.get("/api/posts/:id", async (req, res) => {
   }
 });
 
+app.delete("/api/posts/:id", authMiddleware, async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+
+    if (!post) {
+      return res.status(404).json({ error: "게시글이 없습니다." });
+    }
+
+    // 🚨 보안 체크: 요청한 사람(req.user.id)이 작성자(post.author)와 같은지 확인
+    // DB의 ObjectId는 객체라서 문자열로 바꿔서(.toString) 비교해야 정확합니다.
+    if (post.author.id.toString() !== req.user.userId) {
+      return res.status(403).json({ error: "삭제 권한이 없습니다." });
+    }
+
+    // ✅ 뒤처리: 게시글에 달린 댓글들도 싹 다 지움 (Cascading Delete)
+    await Comment.deleteMany({ postId: post._id });
+
+    // 게시글 삭제
+    await Post.findByIdAndDelete(req.params.id);
+
+    res.json({ message: "삭제 성공" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "삭제 실패" });
+  }
+});
+
+// 2. 게시글 수정 (PUT)
+app.put("/api/posts/:id", authMiddleware, async (req, res) => {
+  try {
+    const { title, content } = req.body;
+    const post = await Post.findById(req.params.id);
+
+    if (!post) return res.status(404).json({ error: "게시글이 없습니다." });
+
+    // 🚨 보안 체크
+    if (post.author.id.toString() !== req.user.userId) {
+      return res.status(403).json({ error: "수정 권한이 없습니다." });
+    }
+
+    // 업데이트 진행
+    post.title = title;
+    post.content = content;
+    // (선택) 수정된 날짜 갱신이 필요하면: post.updatedAt = Date.now();
+
+    await post.save(); // 변경사항 저장
+
+    res.json(post);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "수정 실패" });
+  }
+});
+
 app.post("/api/comments", authMiddleware, async (req, res) => {
   try {
     const { postId, content, parentCommentId } = req.body;
