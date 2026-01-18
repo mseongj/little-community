@@ -32,19 +32,32 @@ app.get(`/api/posts`, async (req, res) => {
     const limit = 10;
     const offset = (page - 1) * limit;
 
-    const totalPosts = await Post.countDocuments();
+    const keyword = req.query.keyword || "";
+
+    let searchCondition = {};
+    if (keyword) {
+      searchCondition = {
+        $or: [
+          { title: { $regex: keyword, $options: "i" } }, // i: 대소문자 무시
+          { content: { $regex: keyword, $options: "i" } },
+        ],
+      };
+    }
+
+    const totalPosts = await Post.countDocuments(searchCondition);
     const totalPages = Math.ceil(totalPosts / limit);
 
-    const posts = await Post.find()
+    const posts = await Post.find(searchCondition)
       .sort({ createdAt: -1 })
       .select("title author createdAt views likes")
-      .limit(limit).skip(offset);
+      .limit(limit)
+      .skip(offset);
 
     res.json({
       posts,
       currentPage: page,
-      totalPages,
-      totalPosts
+      totalPages: totalPages,
+      totalPosts: totalPosts,
     });
   } catch (err) {
     console.error(err);
