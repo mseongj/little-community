@@ -61,7 +61,7 @@ function PostList() {
           value={keyword}
           onChange={(e) => setKeyword(e.target.value)}
           onKeyDown={handleKeyDown}
-          style={{ padding: '8px', flex: 1, border: '1px solid #ddd', borderRadius: '4px' }}
+          style={{ padding: '8px', flex: 1, border: '1px solid var(--border-color)', borderRadius: '4px', backgroundColor: 'var(--bg-container)' }}
         />
         <button 
           onClick={handleSearch}

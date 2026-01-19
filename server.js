@@ -250,6 +250,26 @@ app.put("/api/posts/:id/like", authMiddleware, async (req, res) => {
   }
 });
 
+app.put("/api/users/profile", authMiddleware, async (req, res) => {
+  try {
+    const { nickname, profileImage } = req.body;
+    const userId = req.user.userId; // 토큰에서 뽑은 내 ID
+
+    // 내 정보 찾아서 업데이트
+    // { new: true } 옵션을 줘야 수정된 최신 정보를 리턴해줍니다.
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { nickname, profileImage, },
+      { new: true },
+    ).select("-password"); // 비밀번호는 보안상 빼고 돌려줌
+
+    res.json(updatedUser);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "프로필 수정 실패" });
+  }
+});
+
 const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`🚀 서버 작동 중: http://localhost:${PORT}`);

@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import PostList from './pages/PostList';     // 목록 페이지
 import PostDetail from './pages/PostDetail'; // 상세 페이지
@@ -7,10 +7,12 @@ import PostCreate from './pages/PostCreate'; // 글쓸기 페이지
 import LoginPage from './pages/LoginPage'; // 로그인 페이지
 import SignupPage from './pages/SignupPage';
 import PostEdit from './pages/PostEdit';
+import MyPage from './pages/MyPage';
+import Header from './components/Headder';
 import './App.css'; // 스타일
 
 function App() {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  // const [isDarkMode, setIsDarkMode] = useState(false);
 
   const [user, setUser] = useState(() => {
     // 컴포넌트가 처음 생성될 때 딱 한 번만 실행됨
@@ -21,25 +23,43 @@ function App() {
     return null; // 없으면 null
   });
 
-  // Handle dark mode changes
-  useEffect(() => {
-    if (isDarkMode) document.body.classList.add('dark-mode');
-    else document.body.classList.remove('dark-mode');
-  }, [isDarkMode]);
+  // // Handle dark mode changes
+  // useEffect(() => {
+  //   if (isDarkMode) document.body.classList.add('dark-mode');
+  //   else document.body.classList.remove('dark-mode');
+  // }, [isDarkMode]);
 
-  // 로그아웃 함수
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    setUser(null);
-    alert("로그아웃 되었습니다.");
-  };
+  // // 로그아웃 함수
+  // const handleLogout = () => {
+  //   localStorage.removeItem("token");
+  //   localStorage.removeItem("user");
+  //   setUser(null);
+  //   alert("로그아웃 되었습니다.");
+  // };
 
   return (
     <BrowserRouter>
       <div className="app-container">
         {/* 상단 네비게이션 */}
-        <header style={{ 
+        <Header user={user} setUser={setUser} />
+        <Routes>
+          <Route path="/" element={<PostList />} />
+          <Route path="/posts/:id" element={<PostDetail user={user}/>} />
+          <Route path="/posts/create" element={<PostCreate />} />
+          <Route path='/posts/edit/:id' element={<PostEdit />} />
+          <Route path="/login" element={<LoginPage setUser={setUser}/>} />
+          <Route path="/signup" element={<SignupPage />} />
+          <Route path="/mypage" element={<MyPage user={user} setUser={setUser} />} />
+        </Routes>
+      </div>
+    </BrowserRouter>
+  );
+}
+
+export default App;
+
+{/*
+<header style={{ 
           marginBottom: '20px', 
           paddingBottom: '10px', 
           borderBottom: '1px solid var(--border-color)',
@@ -51,7 +71,6 @@ function App() {
             My Community
           </a>
 
-          {/* 다크모드 토글 버튼 */}
           <button 
             onClick={() => setIsDarkMode(!isDarkMode)}
             style={{
@@ -81,18 +100,4 @@ function App() {
               </Link>
             )}
         </header>
-
-        <Routes>
-          <Route path="/" element={<PostList />} />
-          <Route path="/posts/:id" element={<PostDetail user={user}/>} />
-          <Route path="/posts/create" element={<PostCreate />} />
-          <Route path='/posts/edit/:id' element={<PostEdit />} />
-          <Route path="/login" element={<LoginPage setUser={setUser}/>} />
-          <Route path="/signup" element={<SignupPage />} />
-        </Routes>
-      </div>
-    </BrowserRouter>
-  );
-}
-
-export default App;
+        */}
