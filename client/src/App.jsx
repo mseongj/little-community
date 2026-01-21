@@ -9,7 +9,7 @@ import SignupPage from './pages/SignupPage';
 import PostEdit from './pages/PostEdit';
 import MyPage from './pages/MyPage';
 import Header from './components/Headder';
-import GoogleCallback from './pages/GoogleCallback';
+import SocialLoginCallback from './components/SocialLoginCallback';
 import './App.css'; // 스타일
 
 function App() {
@@ -48,8 +48,12 @@ function App() {
           <Route path="/posts/:id" element={<PostDetail user={user}/>} />
           <Route path="/posts/create" element={<PostCreate />} />
           <Route path='/posts/edit/:id' element={<PostEdit />} />
+
           <Route path="/login" element={<LoginPage setUser={setUser}/>} />
-          <Route path="/auth/google/callback" element={<GoogleCallback setUser={setUser} />} />
+          <Route path="/auth/google/callback" element={<SocialLoginCallback provider="google" setUser={setUser} />} />
+          <Route path="/auth/naver/callback" element={<SocialLoginCallback provider="naver" setUser={setUser} />} />
+          {/* 나중에 카카오 추가할 때도 복붙하고 provider만 바꾸면 끝! */}
+          <Route path="/auth/kakao/callback" element={<SocialLoginCallback provider="kakao" setUser={setUser} />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/mypage" element={<MyPage user={user} setUser={setUser} />} />
         </Routes>

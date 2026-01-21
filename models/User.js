@@ -21,7 +21,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
       default: "local",
-      enum: ["local", "google", "naver", "apple"],
+      enum: ["local", "google", "naver", "kakao"],
     },
     snsId: {
       type: String,

@@ -1,12 +1,15 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import GoogleLogo from '../assets/Google.svg';
+import NaverLogo from '../assets/Naver.svg'
+import KakaoLogo from '../assets/Kakao.svg'
 
 function LoginPage({ setUser }) {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  // Google로 로그인 하기
   const handleGoogleLogin = () => {
     // 1. 구글 설정 정보
     const GOOGLE_CLIENT_ID = "120609248464-emihghm3t9uhobqf62ee5hg3covbida1.apps.googleusercontent.com";
@@ -19,6 +22,25 @@ function LoginPage({ setUser }) {
     // 3. 구글로 이동!
     window.location.href = googleURL;
   };
+  // Naver로 로그인 하기
+  const handleNaverLogin = () => {
+    const NAVER_CLIENT_ID = "o3R7aLj3HE9WlGUOIrpo";
+    const REDIRECT_URI = "http://localhost:5173/auth/naver/callback";
+    const STATE = "false"; // 보안을 위한 랜덤 문자열 (실무에선 난수 생성 추천, 지금은 간단히)
+
+    const naverURL = `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${NAVER_CLIENT_ID}&state=${STATE}&redirect_uri=${REDIRECT_URI}`;
+
+    window.location.href = naverURL;
+  };
+
+  const handleKakaoLogin = () => {
+    const KAKAO_CLIENT_ID = "bb38b331103441ab22fb5e075bf56809";
+    const REDIRECT_URI = "http://localhost:5173/auth/kakao/callback";
+    
+    const kakaoURL = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${KAKAO_CLIENT_ID}&redirect_uri=${REDIRECT_URI}`;
+
+    window.location.href = kakaoURL;
+  }
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -84,18 +106,41 @@ function LoginPage({ setUser }) {
       >
         로그인 하기
       </button>
-      <div style={{ marginTop: "20px", borderTop: "1px solid #ddd", paddingTop: "20px" }}>
+      <div style={{ marginTop: "20px", borderTop: "1px solid #ddd", paddingTop: "20px", display: "flex", flexDirection: "column", height: "200px", justifyContent: "space-evenly" }}>
         <button 
           onClick={handleGoogleLogin}
           style={{ 
             width: "100%", padding: "10px", 
             backgroundColor: "white", border: "1px solid #ccc", borderRadius: "5px", 
-            cursor: "pointer", display: "flex", justifyContent: "center", alignItems: "center", gap: "10px"
+            cursor: "pointer", display: "flex", justifyContent: "center", alignItems: "center", gap: "10px", fontSize: "16px"
           }}
         >
           <img src={GoogleLogo} alt="G" width="20"/>
-          구글 계정으로 로그인
+          Google 계정으로 로그인
         </button>
+        <button 
+          onClick={handleNaverLogin}
+          style={{ 
+            width: "100%", padding: "10px", 
+            backgroundColor: "#03A94D", border: "1px solid #ccc", borderRadius: "5px", color: "white", 
+            cursor: "pointer", display: "flex", justifyContent: "center", alignItems: "center", gap: "8px", fontSize: "16px"
+          }}
+        >
+          <img src={NaverLogo} alt="Naver" width="18" height="18"/>
+          네이버 로그인
+        </button>
+        <button 
+          onClick={handleKakaoLogin}
+          style={{ 
+            width: "100%", padding: "10px", 
+            backgroundColor: "#FEE500", border: "1px solid #ccc", borderRadius: "5px", color: "#000000 85%", 
+            cursor: "pointer", display: "flex", justifyContent: "center", alignItems: "center", gap: "8px", fontSize: "16px"
+          }}
+        >
+          <img src={KakaoLogo} alt="Kakao" width="18" height="18"/>
+          카카오 로그인
+        </button>
+
       </div>
       
       <div style={{ marginTop: "15px", textAlign: "center" }}>
