@@ -79,7 +79,7 @@ function Header({ user, setUser }) {
         ) : (
           // ❎ 로그인 안 했을 때 (로그인, 회원가입 버튼)
           <>
-            <Link to="/login" style={{ textDecoration: 'none', color: '#333' }}>로그인</Link>
+            <Link to="/login" style={{ textDecoration: 'none', color: 'var(--text-main)' }}>로그인</Link>
             <Link 
               to="/signup" 
               style={{ 

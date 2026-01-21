@@ -110,6 +110,27 @@ app.get(`/api/posts`, async (req, res) => {
     res.status(500).json({error: "에러 발생"})
   }
 });
+// 상세 조회
+app.get("/api/posts/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const post = await Post.findByIdAndUpdate(
+      id,
+      { $inc: { views: 1 } }, // views를 1 더해라
+      { new: true } // 업데이트된 최신 데이터를 리턴해라 (안 쓰면 옛날 거 줌)
+    )
+    if (!post) {
+      return res.status(404).json({ error: "게시글을 찾을 수 없습니다." });
+    }
+    const comments = await Comment.find({ postId: id}).sort({ createdAt: 1 });
+
+    res.json({ post, comments });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "상세 조회 실패" });
+  }
+});
 // 게시글 생성
 app.post("/api/posts", authMiddleware, async (req, res) => {
   try {
@@ -227,27 +248,7 @@ app.put("/api/posts/:id/like", authMiddleware, async (req, res) => {
     res.status(500).json({ error: "추천 처리 실패" });
   }
 });
-// 상세 조회
-app.get("/api/posts/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
-    const post = await Post.findByIdAndUpdate(
-      id,
-      { $inc: { views: 1 } }, // views를 1 더해라
-      { new: true } // 업데이트된 최신 데이터를 리턴해라 (안 쓰면 옛날 거 줌)
-    )
-    if (!post) {
-      return res.status(404).json({ error: "게시글을 찾을 수 없습니다." });
-    }
-    const comments = await Comment.find({ postId: id}).sort({ createdAt: 1 });
 
-    res.json({ post, comments });
-
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "상세 조회 실패" });
-  }
-});
 
 
 // 회원 상세

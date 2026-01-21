@@ -88,7 +88,7 @@ function LoginPage({ setUser }) {
           placeholder="이메일"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
+          style={{ width: "100%", padding: "10px", marginBottom: "15px", backgroundColor: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius:"4px", color: "var(--text-main)" }}
         />
         <input
           type="password"
@@ -96,7 +96,7 @@ function LoginPage({ setUser }) {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           onKeyDown={(e) => e.key==='Enter' && handleLogin()}
-          style={{ width: "100%", padding: "10px" }}
+          style={{ width: "100%", padding: "10px", backgroundColor: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius:"4px", color: "var(--text-main)" }}
         />
       </div>
 
@@ -106,12 +106,12 @@ function LoginPage({ setUser }) {
       >
         로그인 하기
       </button>
-      <div style={{ marginTop: "20px", borderTop: "1px solid #ddd", paddingTop: "20px", display: "flex", flexDirection: "column", height: "200px", justifyContent: "space-evenly" }}>
+      <div style={{ marginTop: "25px", borderTop: "1px solid var(--border-color)", paddingTop: "20px", display: "flex", flexDirection: "column", height: "200px", justifyContent: "space-evenly" }}>
         <button 
           onClick={handleGoogleLogin}
           style={{ 
             width: "100%", padding: "10px", 
-            backgroundColor: "white", border: "1px solid #ccc", borderRadius: "5px", 
+            backgroundColor: "#F2F2F2", border: "1px solid var(--border-color)", borderRadius: "5px", 
             cursor: "pointer", display: "flex", justifyContent: "center", alignItems: "center", gap: "10px", fontSize: "16px"
           }}
         >
@@ -122,7 +122,7 @@ function LoginPage({ setUser }) {
           onClick={handleNaverLogin}
           style={{ 
             width: "100%", padding: "10px", 
-            backgroundColor: "#03A94D", border: "1px solid #ccc", borderRadius: "5px", color: "white", 
+            backgroundColor: "#03A94D", border: "1px solid var(--border-color)", borderRadius: "5px", color: "white", 
             cursor: "pointer", display: "flex", justifyContent: "center", alignItems: "center", gap: "8px", fontSize: "16px"
           }}
         >
@@ -133,7 +133,7 @@ function LoginPage({ setUser }) {
           onClick={handleKakaoLogin}
           style={{ 
             width: "100%", padding: "10px", 
-            backgroundColor: "#FEE500", border: "1px solid #ccc", borderRadius: "5px", color: "#000000 85%", 
+            backgroundColor: "#FEE500", border: "1px solid var(--border-color)", borderRadius: "5px", color: "#000000 85%", 
             cursor: "pointer", display: "flex", justifyContent: "center", alignItems: "center", gap: "8px", fontSize: "16px"
           }}
         >

@@ -100,9 +100,8 @@ function PostDetail({ user }) {
 
   if (!post) return <div>로딩 중...</div>;
 
-  // const isOwner = user && post.author && user.id === post.author;
-  const isOwner = user.id === post.author.id;
-
+  const isOwner = user && post.author && user.id === post.author.id;
+  
   return (
     <div>
       <Link to="/">← 목록으로 돌아가기</Link>
