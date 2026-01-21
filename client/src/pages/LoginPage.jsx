@@ -1,10 +1,24 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import GoogleLogo from '../assets/Google.svg';
 
 function LoginPage({ setUser }) {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const handleGoogleLogin = () => {
+    // 1. 구글 설정 정보
+    const GOOGLE_CLIENT_ID = "120609248464-emihghm3t9uhobqf62ee5hg3covbida1.apps.googleusercontent.com";
+    const REDIRECT_URI = "http://localhost:5173/auth/google/callback";
+    
+    // 2. 구글 로그인 URL 만들기
+    // scope: 구글한테서 받아올 정보 범위 (email, profile)
+    const googleURL = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code&scope=email profile`;
+
+    // 3. 구글로 이동!
+    window.location.href = googleURL;
+  };
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -70,6 +84,19 @@ function LoginPage({ setUser }) {
       >
         로그인 하기
       </button>
+      <div style={{ marginTop: "20px", borderTop: "1px solid #ddd", paddingTop: "20px" }}>
+        <button 
+          onClick={handleGoogleLogin}
+          style={{ 
+            width: "100%", padding: "10px", 
+            backgroundColor: "white", border: "1px solid #ccc", borderRadius: "5px", 
+            cursor: "pointer", display: "flex", justifyContent: "center", alignItems: "center", gap: "10px"
+          }}
+        >
+          <img src={GoogleLogo} alt="G" width="20"/>
+          구글 계정으로 로그인
+        </button>
+      </div>
       
       <div style={{ marginTop: "15px", textAlign: "center" }}>
         <a href="/signup" style={{ fontSize: "0.9rem", color: "var(--text-sub)" }}>회원가입 하러가기</a>

@@ -50,6 +50,12 @@ router.post("/login", async (req, res) => {
     if (!existingUser) {
       return res.status(401).json({ error: "가입된 사용자가 아닙니다." });
     }
+    if (!existingUser.password) {
+      return res.status(400).json({
+        error:
+          "소셜(구글) 계정으로 가입된 이메일입니다. 소셜 로그인을 이용해주세요.",
+      });
+    }
 
     // argon2.verify(DB에있는암호화된비번, 사용자가입력한쌩비번)
     const isMatch = await argon2.verify(existingUser.password, password);
@@ -75,6 +81,7 @@ router.post("/login", async (req, res) => {
         id: existingUser._id,
         nickname: existingUser.nickname,
         email: existingUser.email,
+        profileImage: existingUser.profileImage || "", // 프사 정보도 같이 주면 좋습니다!
       },
     });
 

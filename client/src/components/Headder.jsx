@@ -64,17 +64,8 @@ function Header({ user, setUser }) {
           <>
             <Link to="/mypage" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'var(--text-main)', gap: '8px' }}>
               {/* 프로필 이미지 (없으면 회색 기본 원) */}
-              {user.profileImage ? (
-                <img 
-                  src={user.profileImage} 
-                  alt="프로필 사진" 
-                  style={{ width: "32px", height: "32px", borderRadius: "50%", objectFit: "cover", border: "1px solid var(--border-color)" }}
-                />
-              ) : (
-                  <img src="https://placehold.co/32" alt="프로필 사진" style={{ width: "32px", height: "32px", borderRadius: "50%", backgroundColor: "#ddd" }} />
-                // <div style={{ width: "32px", height: "32px", borderRadius: "50%", backgroundColor: "#ddd" }}>
-                // </div>
-              )}
+              
+              <img src={user.profileImage || "https://placehold.co/32"}  alt="프로필" style={{ width: "32px", height: "32px", borderRadius: "50%", objectFit: "cover", border: "1px solid var(--border-color)" }} />
               <span style={{ fontWeight: 'bold' }}>{user.nickname}님</span>
             </Link>
             

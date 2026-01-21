@@ -9,6 +9,7 @@ import SignupPage from './pages/SignupPage';
 import PostEdit from './pages/PostEdit';
 import MyPage from './pages/MyPage';
 import Header from './components/Headder';
+import GoogleCallback from './pages/GoogleCallback';
 import './App.css'; // 스타일
 
 function App() {
@@ -48,6 +49,7 @@ function App() {
           <Route path="/posts/create" element={<PostCreate />} />
           <Route path='/posts/edit/:id' element={<PostEdit />} />
           <Route path="/login" element={<LoginPage setUser={setUser}/>} />
+          <Route path="/auth/google/callback" element={<GoogleCallback setUser={setUser} />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/mypage" element={<MyPage user={user} setUser={setUser} />} />
         </Routes>

@@ -3,6 +3,7 @@ dotenv.config(); // 설정 로드
 
 import express from "express";
 import cors from "cors";
+import jwt from "jsonwebtoken";
 import connectDB from "./config/db.js"; // .js 필수!
 
 // 모델 불러오기 (.js 필수!)
@@ -267,6 +268,85 @@ app.put("/api/users/profile", authMiddleware, async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "프로필 수정 실패" });
+  }
+});
+
+app.post("/api/auth/google", async (req, res) => {
+  try {
+    const userCode = req.body.code;
+    const client_id = process.env.GOOGLE_CLIENT_ID;
+    const client_secret = process.env.GOOGLE_CLIENT_SECRET;
+
+    // 1. 구글 토큰 받기
+    const reqBody = {
+      code: userCode,
+      client_id,
+      client_secret,
+      redirect_uri: "http://localhost:5173/auth/google/callback",
+      grant_type: "authorization_code",
+    };
+
+    const GoogleToken = await fetch("https://oauth2.googleapis.com/token", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(reqBody),
+    });
+
+    const tokenData = await GoogleToken.json();
+    console.log(tokenData);
+    
+    if (tokenData.error) {
+      console.error("구글 토큰 에러:", tokenData);
+      return res.status(400).json({ error: "구글 로그인 실패" });
+    }
+
+    const accessToken = tokenData.access_token;
+
+    // 2. 구글 유저 정보 받기
+    const userInfoRes = await fetch(
+      "https://www.googleapis.com/oauth2/v2/userinfo",
+      {
+        method: "GET",
+        headers: { Authorization: `Bearer ${accessToken}` },
+      },
+    );
+
+    const userInfo = await userInfoRes.json();
+
+    // 3. 우리 DB에서 확인
+    let user = await User.findOne({ email: userInfo.email });
+
+    // 4. 없으면 회원가입 (신규 생성)
+    if (!user) {
+      user = await User.create({
+        email: userInfo.email,
+        nickname: userInfo.name, // 구글은 nickname 대신 name을 줍니다.
+        profileImage: userInfo.picture, // 구글 프로필 사진
+        provider: "google",
+      });
+      // User.create는 자동으로 save()까지 되므로 .save() 또 안 해도 됨
+    }
+
+    // 5. 토큰 발급 (기존 유저든 신규 유저든 여기서 공통 처리!)
+    const token = jwt.sign(
+      { userId: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
+
+    // 6. 응답 보내기
+    res.status(200).json({
+      message: "구글 로그인 성공!",
+      token,
+      user: {
+        id: user._id,
+        nickname: user.nickname,
+        email: user.email,
+        profileImage: user.profileImage,
+      },
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Google로 로그인에 실패 했습니다." });
   }
 });
 
