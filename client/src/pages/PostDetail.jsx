@@ -18,13 +18,13 @@ function PostDetail({ user }) {
 
   // 데이터 불러오는 함수를 따로 뺌 (댓글 작성 후 다시 불러오기 위해)
   const fetchPostData = () => {
-    fetch(`http://localhost:3000/api/posts/${id}`)
+    fetch(`${import.meta.env.VITE_API_URL}/api/posts/${id}`)
       .then(res => res.json())
       .then(result => setData(result));
   };
 
   useEffect(() => {
-    fetch(`http://localhost:3000/api/posts/${id}`)
+    fetch(`${import.meta.env.VITE_API_URL}/api/posts/${id}`)
       .then(res => res.json())
       .then(result => {
         setData(result);
@@ -52,7 +52,7 @@ function PostDetail({ user }) {
     }
 
     try {
-      const response = await fetch(`http://localhost:3000/api/posts/${id}/like`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/posts/${id}/like`, {
         method: "PUT", // 서버랑 맞춤
         headers: {
           "Authorization": `Bearer ${token}` // 토큰 필수
@@ -78,7 +78,7 @@ function PostDetail({ user }) {
     if (!window.confirm("정말 삭제하시겠습니까? 복구할 수 없습니다.")) return;
 
     try {
-      const response = await fetch(`http://localhost:3000/api/posts/${id}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/posts/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}` // 토큰 필수!

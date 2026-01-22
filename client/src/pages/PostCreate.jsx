@@ -27,7 +27,7 @@ function PostCreate() {
       formData.append('image', file); // 백엔드 설정인 'image'와 이름 같아야 함
 
       try {
-        const res = await fetch('http://localhost:3000/api/upload', {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}api/upload`, {
           method: 'POST',
           body: formData, // 헤더에 Content-Type 쓰지 마세요! (자동 설정됨)
         });
@@ -66,7 +66,7 @@ function PostCreate() {
       return;
     }
     try {
-      const response = await fetch("http://localhost:3000/api/posts", {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/posts`, {
         method: "POST",
         headers: {
           'Content-Type': 'application/json',

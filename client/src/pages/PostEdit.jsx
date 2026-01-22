@@ -12,7 +12,7 @@ function PostEdit() {
 
   // 1. 기존 데이터 불러오기
   useEffect(() => {
-    fetch(`http://localhost:3000/api/posts/${id}`)
+    fetch(`${import.meta.env.VITE_API_URL}/api/posts/${id}`)
       .then(res => res.json())
       .then(data => {
         // 기존 제목과 내용을 state에 채워넣음
@@ -39,7 +39,7 @@ function PostEdit() {
       formData.append('image', file); // 백엔드 설정인 'image'와 이름 같아야 함
 
       try {
-        const res = await fetch('http://localhost:3000/api/upload', {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/upload`, {
           method: 'POST',
           body: formData, // 헤더에 Content-Type 쓰지 마세요! (자동 설정됨)
         });
@@ -74,7 +74,7 @@ function PostEdit() {
     }
     
     try {
-      const response = await fetch(`http://localhost:3000/api/posts/${id}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/posts/${id}`, {
         method: "PUT", // 👈 POST가 아니라 PUT 사용!
         headers: {
           'Content-Type': 'application/json',

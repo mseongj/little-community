@@ -25,7 +25,8 @@ function MyPage({ user, setUser }) { // App.js에서 user, setUser 둘 다 받�
 
     try {
       // S3 업로드
-      const res = await fetch("http://localhost:3000/api/upload", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/upload`, {
+        
         method: "POST",
         body: formData,
       });
@@ -43,7 +44,7 @@ function MyPage({ user, setUser }) { // App.js에서 user, setUser 둘 다 받�
   const handleSave = async () => {
     try {
         const token = localStorage.getItem("token");
-        const res = await fetch("http://localhost:3000/api/users/profile", {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/profile`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",

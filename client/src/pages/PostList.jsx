@@ -13,7 +13,7 @@ function PostList() {
   useEffect(() => {
     // 2. URL에 keyword 파라미터 추가
     // searchQuery가 비어있으면 그냥 전체 조회, 있으면 검색 조회
-    fetch(`http://localhost:3000/api/posts?page=${page}&keyword=${searchQuery}`)
+    fetch(`${import.meta.env.VITE_API_URL}/api/posts?page=${page}&keyword=${searchQuery}`)
       .then((res) => res.json())
       .then((data) => {
         setPosts(data.posts);

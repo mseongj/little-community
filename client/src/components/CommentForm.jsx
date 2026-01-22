@@ -21,7 +21,7 @@ function CommentForm({ postId, parentCommentId = null, onSuccess }) {
     }
 
     try {
-      const response = await fetch("http://localhost:3000/api/comments", {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/comments`, {
         method: "POST",
         headers: {
           'Content-Type': 'application/json',

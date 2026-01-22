@@ -28,7 +28,6 @@ function LoginPage({ setUser }) {
   const handleNaverLogin = () => {
     const NAVER_CLIENT_ID = import.meta.env.VITE_NAVER_CLIENT_ID; // 환경변수 사용
     const REDIRECT_URI = `${window.location.origin}/auth/naver/callback`;
-    // const REDIRECT_URI = "http://localhost:5173/auth/naver/callback";
     const STATE = Math.random().toString(36).substring(2, 15); // 보안을 위한 랜덤 문자열 (실무에선 난수 생성 추천, 지금은 간단히)
 
     sessionStorage.setItem("naver_state", STATE);

@@ -3,7 +3,7 @@ async function loadComments() {
 
   try {
     // 1. 실제 서버 API 호출 (로컬호스트 3000번)
-    const response = await fetch("http://localhost:3000/api/posts/latest");
+    const response = await fetch(`${window.location.origin}/api/posts/latest`);
     const jsonData = await response.json();
 
     // 게시글 제목도 업데이트 해볼까요? (선택사항)

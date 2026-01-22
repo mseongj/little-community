@@ -18,7 +18,7 @@ function SignupPage() {
 
     try {
       // 2. 서버로 회원가입 요청 보내기
-      const response = await fetch("http://localhost:3000/api/auth/signup", {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password, nickname }),
