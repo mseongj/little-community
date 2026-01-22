@@ -475,9 +475,9 @@ app.post("/api/auth/kakao", async (req, res) => {
     const profile = kakaoAccount.profile;
     
     const standardUser = {
-      email: kakaoAccount.email, // 이메일 제공 동의가 안 되어 있으면 없을 수 있음
-      nickname: profile.nickname,
-      profileImage: profile.profile_image_url, // 필드명이 profile_image_url 임
+      email: kakaoAccount.email,
+      nickname: properties?.nickname || kakaoAccount.profile?.nickname,
+      profileImage: properties?.profile_image || kakaoAccount.profile?.profile_image_url,
       provider: "kakao",
     };
     console.log("카카오 유저 정보:", standardUser);
@@ -489,8 +489,6 @@ app.post("/api/auth/kakao", async (req, res) => {
     res.status(500).json({ error: "Kakao로 로그인에 실패 했습니다." });
   }
 })
-
-
 
 const PORT = 3000;
 app.listen(PORT, () => {
