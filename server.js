@@ -476,8 +476,8 @@ app.post("/api/auth/kakao", async (req, res) => {
     
     const standardUser = {
       email: kakaoAccount.email,
-      nickname: properties?.nickname || kakaoAccount.profile?.nickname,
-      profileImage: properties?.profile_image || kakaoAccount.profile?.profile_image_url,
+      nickname: profile?.nickname || kakaoAccount.profile?.nickname,
+      profileImage: profile?.profile_image || kakaoAccount.profile?.profile_image_url,
       provider: "kakao",
     };
     console.log("카카오 유저 정보:", standardUser);
