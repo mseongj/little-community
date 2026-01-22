@@ -12,11 +12,23 @@ function SocialLoginCallback({ provider, setUser }) {
     const code = searchParams.get("code");
     const state = searchParams.get("state");
 
+    // ✅ 네이버 로그인일 때만 검증
+    const savedState = sessionStorage.getItem(`${provider}_state`);
+    if (savedState) {
+      if (savedState !== state) {
+        alert("보안 경고: 정상적인 요청이 아닙니다.");
+        navigate("/login");
+        return;
+      }
+      // 검증 성공하면 삭제
+      sessionStorage.removeItem(`${provider}_state`);
+    }
+
     if (code) {
       console.log(`${provider} 로그인 시도 중... code: ${code}`);
 
       // 2. 백엔드 API 주소 동적 생성 (/api/auth/google, /api/auth/naver 등)
-      fetch(`http://localhost:3000/api/auth/${provider}`, {
+      fetch(`${import.meta.env.VITE_API_URL}/api/auth/${provider}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         // 네이버는 state가 필수고, 구글은 무시하니까 그냥 같이 보내도 상관없음!

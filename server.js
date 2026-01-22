@@ -64,7 +64,13 @@ const app = express();
 // DB 연결
 connectDB();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: process.env.CLIENT_ORIGIN,
+    credentials: true,
+  }),
+);
+
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);
@@ -333,7 +339,7 @@ app.post("/api/auth/google", async (req, res) => {
       code: userCode,
       client_id,
       client_secret,
-      redirect_uri: "http://localhost:5173/auth/google/callback",
+      redirect_uri: `${process.env.CLIENT_ORIGIN}/auth/google/callback`,
       grant_type: "authorization_code",
     };
 
@@ -410,6 +416,7 @@ app.post("/api/auth/naver", async (req, res) => {
     });
     const userInfoData = await userInfoRes.json();
     const userInfo = userInfoData.response;
+    console.log(userInfo);
 
     const standardUser = {
       email: userInfo.email,
@@ -431,7 +438,7 @@ app.post("/api/auth/kakao", async (req, res) => {
     const { code } = req.body;
     const client_id = process.env.KAKAO_CLIENT_ID;
     const client_secret = process.env.KAKAO_CLIENT_SECRET;
-    const redirect_uri = "http://localhost:5173/auth/kakao/callback"; // 프론트와 일치해야 함!
+    const redirect_uri = `${process.env.CLIENT_ORIGIN}/auth/kakao/callback`; // 프론트와 일치해야 함!
 
     const tokenUrl = `https://kauth.kakao.com/oauth/token`;
 

@@ -12,21 +12,26 @@ function LoginPage({ setUser }) {
   // Google로 로그인 하기
   const handleGoogleLogin = () => {
     // 1. 구글 설정 정보
-    const GOOGLE_CLIENT_ID = "120609248464-emihghm3t9uhobqf62ee5hg3covbida1.apps.googleusercontent.com";
-    const REDIRECT_URI = "http://localhost:5173/auth/google/callback";
-    
-    // 2. 구글 로그인 URL 만들기
+    const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+    const REDIRECT_URI = `${window.location.origin}/auth/google/callback`;
+
+    const STATE = Math.random().toString(36).substring(2, 15);
+
+    sessionStorage.setItem("google-state", STATE);
     // scope: 구글한테서 받아올 정보 범위 (email, profile)
-    const googleURL = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code&scope=email profile`;
+    const googleURL = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code&scope=email profile&state=${STATE}`;
 
     // 3. 구글로 이동!
     window.location.href = googleURL;
   };
   // Naver로 로그인 하기
   const handleNaverLogin = () => {
-    const NAVER_CLIENT_ID = "o3R7aLj3HE9WlGUOIrpo";
-    const REDIRECT_URI = "http://localhost:5173/auth/naver/callback";
-    const STATE = "false"; // 보안을 위한 랜덤 문자열 (실무에선 난수 생성 추천, 지금은 간단히)
+    const NAVER_CLIENT_ID = import.meta.env.VITE_NAVER_CLIENT_ID; // 환경변수 사용
+    const REDIRECT_URI = `${window.location.origin}/auth/naver/callback`;
+    // const REDIRECT_URI = "http://localhost:5173/auth/naver/callback";
+    const STATE = Math.random().toString(36).substring(2, 15); // 보안을 위한 랜덤 문자열 (실무에선 난수 생성 추천, 지금은 간단히)
+
+    sessionStorage.setItem("naver_state", STATE);
 
     const naverURL = `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${NAVER_CLIENT_ID}&state=${STATE}&redirect_uri=${REDIRECT_URI}`;
 
@@ -34,10 +39,14 @@ function LoginPage({ setUser }) {
   };
 
   const handleKakaoLogin = () => {
-    const KAKAO_CLIENT_ID = "bb38b331103441ab22fb5e075bf56809";
-    const REDIRECT_URI = "http://localhost:5173/auth/kakao/callback";
+    const KAKAO_CLIENT_ID = import.meta.env.VITE_KAKAO_CLIENT_ID;
+    const REDIRECT_URI = `${window.location.origin}/auth/kakao/callback`;
+
+    const STATE = Math.random().toString(36).substring(2, 15);
+        
+    sessionStorage.setItem("naver_state", STATE);
     
-    const kakaoURL = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${KAKAO_CLIENT_ID}&redirect_uri=${REDIRECT_URI}`;
+    const kakaoURL = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${KAKAO_CLIENT_ID}&redirect_uri=${REDIRECT_URI}&state=${STATE}`;
 
     window.location.href = kakaoURL;
   }
@@ -49,7 +58,7 @@ function LoginPage({ setUser }) {
     }
 
     try {
-      const response = await fetch("http://localhost:3000/api/auth/login", {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),

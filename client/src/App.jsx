@@ -13,8 +13,6 @@ import SocialLoginCallback from './components/SocialLoginCallback';
 import './App.css'; // 스타일
 
 function App() {
-  // const [isDarkMode, setIsDarkMode] = useState(false);
-
   const [user, setUser] = useState(() => {
     // 컴포넌트가 처음 생성될 때 딱 한 번만 실행됨
     const storedUser = localStorage.getItem("user");
@@ -23,20 +21,6 @@ function App() {
     }
     return null; // 없으면 null
   });
-
-  // // Handle dark mode changes
-  // useEffect(() => {
-  //   if (isDarkMode) document.body.classList.add('dark-mode');
-  //   else document.body.classList.remove('dark-mode');
-  // }, [isDarkMode]);
-
-  // // 로그아웃 함수
-  // const handleLogout = () => {
-  //   localStorage.removeItem("token");
-  //   localStorage.removeItem("user");
-  //   setUser(null);
-  //   alert("로그아웃 되었습니다.");
-  // };
 
   return (
     <BrowserRouter>
