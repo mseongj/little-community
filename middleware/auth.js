@@ -11,7 +11,7 @@ const authMiddleware = (req, res, next) => {
 
   try {
     // 2. 토큰 검증 ("비밀키"는 로그인할 때 쓴 것과 똑같아야 함!)
-    const decoded = jwt.verify(token, "비밀키");
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     // 3. 검증된 정보를 req 객체에 붙여서 다음 단계로 넘김
     req.user = decoded; // { userId: "..." }
