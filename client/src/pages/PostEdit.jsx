@@ -67,7 +67,7 @@ function PostEdit() {
   // 3. 수정 요청 (PUT)
   const handleSubmit = async () => {
     const token = localStorage.getItem("token");
-    
+
     if (!title.trim() || !content.trim()) {
       alert("제목과 내용을 입력해주세요.");
       return;
@@ -101,9 +101,13 @@ function PostEdit() {
       <input 
         type="text" 
         value={title} 
+        maxLength={50} // ✅ 여기도 제한 추가
         onChange={(e) => setTitle(e.target.value)} 
-        style={{ width: "100%", padding: "10px", marginBottom: "15px" }}
+        style={{ width: "100%", padding: "10px" }}
       />
+      <div style={{ textAlign: "right", fontSize: "0.8rem", color: "#888", marginTop: "5px" }}>
+        {title.length} / 50
+      </div>
       <PostEditor
         ref={quillRef}
         value={content}

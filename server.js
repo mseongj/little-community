@@ -144,6 +144,9 @@ app.post("/api/posts", authMiddleware, async (req, res) => {
     if (!title?.trim() || !content?.trim()) {
       return res.status(400).json({ error: "제목과 내용을 입력해주세요." });
     }
+    if (title.length > 50) {
+      return res.status(400).json({ error: "제목은 50자 이내여야 합니다." });
+    }
 
     const user = await User.findById(req.user.userId);
     if (!user) {
@@ -290,6 +293,9 @@ app.post("/api/comments", authMiddleware, async (req, res) => {
     const { postId, content, parentCommentId } = req.body;
     if (!content?.trim()) {
       return res.status(400).json({ error: "댓글 내용을 입력해주세요." });
+    }
+    if (content.length > 200) {
+      return res.status(400).json({ error: "댓글은 200자 이내여야 합니다." });
     }
     let parentComment = null;
     if (parentCommentId) {

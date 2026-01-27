@@ -116,11 +116,15 @@ function PostCreate() {
       <div style={{ marginBottom: "15px" }} className="title">
         <input 
           type="text" 
-          placeholder="제목을 입력해 주세요" 
+          placeholder="제목을 입력해 주세요 (최대 50자)" // 힌트 문구 수정
+          maxLength={50} // ✅ 핵심: 50자 이상 입력 불가!
           style={{ width: "100%", padding: "10px", fontSize: "1.2rem", border: "1px solid #ccc", backgroundColor: "var(--input-bg)", color: "var(--text-main)"}}
           value={title}
           onChange={(e) => setTitle(e.target.value)} 
         />
+        <div style={{ textAlign: "right", fontSize: "0.8rem", color: "#888", marginTop: "5px" }}>
+          {title.length} / 50
+        </div>
       </div>
       {/* 3. 에디터 컴포넌트 사용 */}
       <PostEditor

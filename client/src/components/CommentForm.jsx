@@ -7,10 +7,17 @@ function CommentForm({ postId, parentCommentId = null, onSuccess }) {
   const [content, setContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const MAX_LENGTH = 300;
+
   const handleSubmit = async () => {
     if (isSubmitting) return;
     if (!content.trim()) {
       alert("내용을 입력해주세요.");
+      return;
+    }
+
+    if (content.length > MAX_LENGTH) {
+      alert(`댓글은 ${MAX_LENGTH}자 이내로 작성해주세요.`);
       return;
     }
     
@@ -59,16 +66,20 @@ function CommentForm({ postId, parentCommentId = null, onSuccess }) {
         style={{ width: "100%", height: "60px", padding: "8px", border: "1px solid #ddd", borderRadius: "4px" }}
         placeholder={parentCommentId ? "답글을 입력하세요..." : "댓글을 남겨보세요."}
         value={content}
+        maxLength={MAX_LENGTH} 
         onChange={(e) => setContent(e.target.value)}
-        disabled={isSubmitting} // 작성 중엔 입력창도 잠그면 더 좋음 (선택)
+        disabled={isSubmitting}
       />
-      <div style={{ textAlign: "right", marginTop: "5px" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "5px" }}>
+        <span style={{ fontSize: "0.8rem", color: "#888" }}>
+          {content.length} / {MAX_LENGTH}
+        </span>
+        
         <button 
           onClick={handleSubmit}
-          disabled={isSubmitting} // ✅ 6. 버튼 비활성화
+          disabled={isSubmitting}
           style={{ 
             padding: "6px 12px", 
-            // 상태에 따라 색상 변경
             background: isSubmitting ? "#ccc" : "#339af0", 
             color: "white", 
             border: "none", 
