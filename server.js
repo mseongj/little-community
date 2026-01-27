@@ -1,9 +1,10 @@
 import dotenv from "dotenv";
 dotenv.config(); // 설정 로드
 
-import express from "express";
 import cors from "cors";
+import express from "express";
 import jwt from "jsonwebtoken";
+import cookieParser from "cookie-parser";
 import connectDB from "./config/db.js"; // .js 필수!
 
 // 모델 불러오기 (.js 필수!)
@@ -72,6 +73,7 @@ app.use(
 );
 
 app.use(express.json());
+app.use(cookieParser());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/upload", uploadRoutes);
@@ -120,18 +122,36 @@ app.get(`/api/posts`, async (req, res) => {
 app.get("/api/posts/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const post = await Post.findByIdAndUpdate(
-      id,
-      { $inc: { views: 1 } }, // views를 1 더해라
-      { new: true } // 업데이트된 최신 데이터를 리턴해라 (안 쓰면 옛날 거 줌)
-    )
+    const viewedCookie = req.cookies[`viewed_${id}`];
+    let post;
+    if (viewedCookie) {
+      // ✅ 2. 이미 본 적 있음 -> 조회수 안 올리고 데이터만 가져옴
+      post = await Post.findById(id);
+      console.log("이미 조회한 게시글입니다. 조회수 증가 X");
+    } else {
+      // ✅ 3. 처음 봄 -> 조회수 올리기 + 쿠키 도장 찍기
+      post = await Post.findByIdAndUpdate(
+        id,
+        { $inc: { views: 1 } },
+        { new: true },
+      );
+
+      // 🕒 쿠키 (유효기간: 24시간)
+      // httpOnly: 자바스크립트로 조작 불가 (보안)
+      res.cookie(`viewed_${id}`, "true", {
+        maxAge: 24 * 60 * 60 * 1000, // 24시간 (밀리초 단위)
+        httpOnly: true,
+      });
+      console.log("조회수 증가 + 쿠키 발급 완료");
+    }
+
     if (!post) {
       return res.status(404).json({ error: "게시글을 찾을 수 없습니다." });
     }
-    const comments = await Comment.find({ postId: id}).sort({ createdAt: 1 });
+
+    const comments = await Comment.find({ postId: id }).sort({ createdAt: 1 });
 
     res.json({ post, comments });
-
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "상세 조회 실패" });
