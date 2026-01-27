@@ -4,34 +4,62 @@ import { useNavigate } from "react-router-dom";
 function SignupPage() {
   const navigate = useNavigate();
   
-  // 입력값 상태 관리
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [nickname, setNickname] = useState("");
 
   const handleSignup = async () => {
-    // 1. 유효성 검사 (빈칸 체크)
-    if (!email || !password || !nickname) {
+    // 1. 공백 제거 (앞뒤 공백 실수 방지)
+    const trimmedEmail = email.trim();
+    const trimmedPassword = password.trim(); // 비밀번호는 공백 포함 정책에 따라 trim 안 할 수도 있음 (보통은 함)
+    const trimmedNickname = nickname.trim();
+
+    // 2. 유효성 검사
+
+    // (1) 빈칸 체크
+    if (!trimmedEmail || !trimmedPassword || !trimmedNickname) {
       alert("모든 필드를 입력해주세요.");
       return;
     }
 
+    // (2) 이메일 정규식 (기본적인 이메일 형식)
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(trimmedEmail)) {
+      alert("올바른 이메일 형식이 아닙니다.");
+      return;
+    }
+
+    // (3) 비밀번호 규칙 (8~20자, 영문+숫자 포함)
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,20}$/;
+    if (!passwordRegex.test(trimmedPassword)) {
+      alert("비밀번호는 8~20자이며, 영문과 숫자를 최소 1개씩 포함해야 합니다.");
+      return;
+    }
+
+    // (4) 닉네임 규칙 (2~10자, 한글/영문/숫자만, 공백X)
+    const nicknameRegex = /^[가-힣a-zA-Z0-9]{2,10}$/;
+    if (!nicknameRegex.test(trimmedNickname)) {
+      alert("닉네임은 2~10자의 한글, 영문, 숫자만 사용 가능합니다.");
+      return;
+    }
+
     try {
-      // 2. 서버로 회원가입 요청 보내기
       const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, nickname }),
+        body: JSON.stringify({ 
+          email: trimmedEmail, 
+          password: trimmedPassword, 
+          nickname: trimmedNickname 
+        }),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        // 성공 시
         alert("회원가입 성공! 로그인 해주세요.");
-        navigate("/login"); // 로그인 페이지로 이동
+        navigate("/login");
       } else {
-        // 실패 시 (중복 이메일 등)
         alert(data.error || "회원가입 실패");
       }
     } catch (error) {
@@ -51,6 +79,7 @@ function SignupPage() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="ex) test@example.com"
+          maxLength={50} 
           style={{ width: "100%", padding: "10px", marginBottom: "10px", borderRadius: "4px", border: "1px solid #ccc" }}
         />
         
@@ -59,7 +88,8 @@ function SignupPage() {
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          placeholder="비밀번호 입력"
+          placeholder="8~20자, 영문+숫자 포함"
+          maxLength={20}
           style={{ width: "100%", padding: "10px", marginBottom: "10px", borderRadius: "4px", border: "1px solid #ccc" }}
         />
 
@@ -68,7 +98,8 @@ function SignupPage() {
           type="text"
           value={nickname}
           onChange={(e) => setNickname(e.target.value)}
-          placeholder="커뮤니티에서 사용할 이름"
+          placeholder="2~10자 (한글, 영문, 숫자)"
+          maxLength={10}
           style={{ width: "100%", padding: "10px", borderRadius: "4px", border: "1px solid #ccc" }}
         />
       </div>

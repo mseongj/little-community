@@ -5,6 +5,7 @@ function MyPage({ user, setUser }) { // App.js에서 user, setUser 둘 다 받�
   
   const [nickname, setNickname] = useState("");
   const [currentImage, setCurrentImage] = useState(""); // 현재 화면에 보여줄 이미지
+  const [isUploading, setIsUploading] = useState(false);
 
   // 1. 초기 데이터 세팅
   useEffect(() => {
@@ -23,6 +24,8 @@ function MyPage({ user, setUser }) { // App.js에서 user, setUser 둘 다 받�
     const formData = new FormData();
     formData.append("image", file);
 
+    setIsUploading(true);
+
     try {
       // S3 업로드
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/upload`, {
@@ -37,6 +40,8 @@ function MyPage({ user, setUser }) { // App.js에서 user, setUser 둘 다 받�
     } catch (err) {
       console.error("이미지 업로드 실패", err);
       alert("이미지 업로드에 실패했습니다.");
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -86,6 +91,11 @@ function MyPage({ user, setUser }) { // App.js에서 user, setUser 둘 다 받�
           }}
           onClick={() => fileInputRef.current.click()} // 이미지 누르면 파일 선택창 열림
         />
+        {isUploading && (
+          <span style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", fontWeight: "bold", color: "#333" }}>
+            업로드 중..
+          </span>
+        )}
         {/* 숨겨진 input */}
         <input 
           type="file" 
@@ -108,8 +118,17 @@ function MyPage({ user, setUser }) { // App.js에서 user, setUser 둘 다 받�
         />
       </div>
 
-      <button onClick={handleSave} style={{ width: "100%", padding: "12px", background: "#339af0", color: "white", border: "none", borderRadius: "5px", cursor: "pointer" }}>
-        저장하기
+      <button 
+        onClick={handleSave} 
+        disabled={isUploading}
+        style={{ 
+          width: "100%", padding: "12px", 
+          background: isUploading ? "#ccc" : "#339af0", 
+          color: "white", border: "none", borderRadius: "5px", 
+          cursor: isUploading ? "not-allowed" : "pointer" 
+        }}
+      >
+        {isUploading ? "이미지 처리 중..." : "저장하기"}
       </button>
     </div>
   );
