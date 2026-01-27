@@ -67,9 +67,9 @@ function PostEdit() {
   // 3. 수정 요청 (PUT)
   const handleSubmit = async () => {
     const token = localStorage.getItem("token");
-    if (!token) {
-      alert("로그인이 필요합니다.");
-      navigate('/login'); // 로그인 페이지로 쫓아냄
+    
+    if (!title.trim() || !content.trim()) {
+      alert("제목과 내용을 입력해주세요.");
       return;
     }
     

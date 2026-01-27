@@ -51,7 +51,7 @@ function LoginPage({ setUser }) {
   }
 
   const handleLogin = async () => {
-    if (!email || !password) {
+    if (!email.trim() || !password.trim()) {
       alert("이메일과 비밀번호를 입력해주세요.");
       return;
     }

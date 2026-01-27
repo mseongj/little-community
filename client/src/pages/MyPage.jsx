@@ -47,6 +47,10 @@ function MyPage({ user, setUser }) { // App.js에서 user, setUser 둘 다 받�
 
   // 3. 저장 버튼 클릭 (DB 업데이트)
   const handleSave = async () => {
+    if (!nickname.trim()) {
+      alert("닉네임을 입력해주세요.");
+      return;
+    }
     try {
         const token = localStorage.getItem("token");
         const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/profile`, {

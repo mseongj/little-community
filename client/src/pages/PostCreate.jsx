@@ -57,11 +57,10 @@ function PostCreate() {
   const handleSubmit = async () => {
     if (isSubmitting) return;
 
-    if(!title || !content) {
+    if (!title.trim() || !content.trim()) {
       alert("제목과 내용을 입력해주세요.");
       return;
     }
-
     // 로컬 스토리지에서 토큰 꺼내기
     const token = localStorage.getItem("token");
     if (!token) {

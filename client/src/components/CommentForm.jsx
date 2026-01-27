@@ -5,23 +5,26 @@ import { useNavigate } from 'react-router-dom';
 function CommentForm({ postId, parentCommentId = null, onSuccess }) {
   const navigate = useNavigate();
   const [content, setContent] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async () => {
+    if (isSubmitting) return;
     if (!content.trim()) {
       alert("내용을 입력해주세요.");
       return;
     }
     
-    // 로컬 스토리지에서 토큰 꺼내기
     const token = localStorage.getItem("token");
     if (!token) {
       alert("로그인이 필요합니다.");
-      navigate('/login'); // 로그인 페이지로 쫓아냄
+      navigate('/login');
       return;
     }
+    setIsSubmitting(true);
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/comments`, {
+      const API_URL = import.meta.env.VITE_API_URL;
+      const response = await fetch(`${API_URL}/api/comments`, {
         method: "POST",
         headers: {
           'Content-Type': 'application/json',
@@ -30,18 +33,23 @@ function CommentForm({ postId, parentCommentId = null, onSuccess }) {
         body: JSON.stringify({
           postId,
           content,
-          parentCommentId, // 이게 있으면 대댓글, 없으면 그냥 댓글
+          parentCommentId, 
         }),
       });
 
       if (response.ok) {
-        setContent(""); // 입력창 비우기
-        if (onSuccess) onSuccess(); // 부모 컴포넌트에게 "나 다 썼어!" 하고 알림
+        setContent(""); 
+        if (onSuccess) onSuccess(); 
       } else {
-        alert("댓글 작성 실패");
+        const data = await response.json();
+        alert(data.error || "댓글 작성 실패");
       }
     } catch (error) {
       console.error(error);
+      alert("서버 오류가 발생했습니다.");
+    } finally {
+      // ✅ 5. 성공하든 실패하든 버튼 잠금 해제
+      setIsSubmitting(false);
     }
   };
 
@@ -52,13 +60,23 @@ function CommentForm({ postId, parentCommentId = null, onSuccess }) {
         placeholder={parentCommentId ? "답글을 입력하세요..." : "댓글을 남겨보세요."}
         value={content}
         onChange={(e) => setContent(e.target.value)}
+        disabled={isSubmitting} // 작성 중엔 입력창도 잠그면 더 좋음 (선택)
       />
       <div style={{ textAlign: "right", marginTop: "5px" }}>
         <button 
           onClick={handleSubmit}
-          style={{ padding: "6px 12px", background: "#339af0", color: "white", border: "none", borderRadius: "4px", cursor: "pointer" }}
+          disabled={isSubmitting} // ✅ 6. 버튼 비활성화
+          style={{ 
+            padding: "6px 12px", 
+            // 상태에 따라 색상 변경
+            background: isSubmitting ? "#ccc" : "#339af0", 
+            color: "white", 
+            border: "none", 
+            borderRadius: "4px", 
+            cursor: isSubmitting ? "not-allowed" : "pointer" 
+          }}
         >
-          등록
+          {isSubmitting ? "등록 중..." : "등록"}
         </button>
       </div>
     </div>

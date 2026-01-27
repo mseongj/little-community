@@ -141,7 +141,7 @@ app.get("/api/posts/:id", async (req, res) => {
 app.post("/api/posts", authMiddleware, async (req, res) => {
   try {
     const { title, content } = req.body;
-    if (!title || !content) {
+    if (!title?.trim() || !content?.trim()) {
       return res.status(400).json({ error: "제목과 내용을 입력해주세요." });
     }
 
@@ -170,6 +170,9 @@ app.post("/api/posts", authMiddleware, async (req, res) => {
 app.put("/api/posts/:id", authMiddleware, async (req, res) => {
   try {
     const { title, content } = req.body;
+    if (!title?.trim() || !content?.trim()) {
+      return res.status(400).json({ error: "제목과 내용을 입력해주세요." });
+    }
     const post = await Post.findById(req.params.id);
 
     if (!post) return res.status(404).json({ error: "게시글이 없습니다." });
@@ -261,6 +264,9 @@ app.put("/api/posts/:id/like", authMiddleware, async (req, res) => {
 app.put("/api/users/profile", authMiddleware, async (req, res) => {
   try {
     const { nickname, profileImage } = req.body;
+    if (!nickname?.trim()) {
+      return res.status(400).json({ error: "닉네임을 입력해주세요." });
+    }
     const userId = req.user.userId; // 토큰에서 뽑은 내 ID
 
     // 내 정보 찾아서 업데이트
@@ -282,6 +288,9 @@ app.put("/api/users/profile", authMiddleware, async (req, res) => {
 app.post("/api/comments", authMiddleware, async (req, res) => {
   try {
     const { postId, content, parentCommentId } = req.body;
+    if (!content?.trim()) {
+      return res.status(400).json({ error: "댓글 내용을 입력해주세요." });
+    }
     let parentComment = null;
     if (parentCommentId) {
       parentComment = await Comment.findById(parentCommentId);
