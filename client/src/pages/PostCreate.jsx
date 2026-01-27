@@ -12,50 +12,47 @@ function PostCreate() {
   const [isUploading, setIsUploading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // 1. 이미지 핸들러 (핵심 로직!)
   const handleImageUpload = useCallback(() => {
-    // 1-1. 보이지 않는 input[type="file"]을 만듭니다.
     const input = document.createElement('input');
     input.setAttribute('type', 'file');
-    input.setAttribute('accept', 'image/*'); // 이미지 파일만
-    input.click(); // 강제로 클릭!
+    input.setAttribute('accept', 'image/*');
+    input.click();
 
-    // 1-2. 파일을 선택하면 실행되는 함수
     input.onchange = async () => {
       const file = input.files[0];
       if (!file) return;
 
-      // 1-3. 서버로 파일 전송 (Multer-S3)
       const formData = new FormData();
-      formData.append('image', file); // 백엔드 설정인 'image'와 이름 같아야 함
+      formData.append('image', file);
 
       setIsUploading(true);
 
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/upload`, {
+        const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+        const res = await fetch(`${API_URL}/api/upload`, {
           method: 'POST',
-          body: formData, // 헤더에 Content-Type 쓰지 마세요! (자동 설정됨)
+          body: formData,
         });
         
-        const data = await res.json();
-        const imageUrl = data.url; // S3 이미지 주소
+        if (!res.ok) throw new Error("업로드 실패");
 
-        // 1-4. 에디터에 이미지 삽입
-        const quill = quillRef.current.getEditor(); // 에디터 객체 가져오기
-        const range = quill.getSelection(); // 현재 커서 위치 가져오기
-        
-        // 커서 위치에 이미지 태그 삽입
+        const data = await res.json();
+        const imageUrl = data.url;
+
+        const quill = quillRef.current.getEditor();
+        const range = quill.getSelection();
         quill.insertEmbed(range.index, 'image', imageUrl); 
-        
-        // 커서를 이미지 다음으로 이동
         quill.setSelection(range.index + 1);
 
       } catch (error) {
         console.error("이미지 업로드 실패:", error);
         alert("이미지 업로드 중 오류가 발생했습니다.");
+      } finally {
+        // ✅ 3. 성공하든 실패하든 무조건 로딩 끄기
+        setIsUploading(false);
       }
     };
-  }, []); // 의존성 없음
+  }, []);
 
   const handleSubmit = async () => {
     if (isSubmitting) return;
