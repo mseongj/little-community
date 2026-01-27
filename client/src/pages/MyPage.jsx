@@ -1,20 +1,23 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 
 function MyPage({ user, setUser }) { // App.js에서 user, setUser 둘 다 받아야 함!
   const fileInputRef = useRef(null);
-  
-  const [nickname, setNickname] = useState("");
-  const [currentImage, setCurrentImage] = useState(""); // 현재 화면에 보여줄 이미지
+
+  const [prevUser, setPrevUser] = useState(user);
+  const [nickname, setNickname] = useState(user?.nickname || "");
+  const [currentImage, setCurrentImage] = useState(user?.profileImage || "https://placehold.co/150");
   const [isUploading, setIsUploading] = useState(false);
 
-  // 1. 초기 데이터 세팅
-  useEffect(() => {
+
+  if (user !== prevUser) {
+    setPrevUser(user); // 기준값 업데이트
+    
+    // user 정보가 있을 때만 덮어쓰기
     if (user) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setNickname(user.nickname);
-      setCurrentImage(user.profileImage || "https://placehold.co/150"); // 기본 이미지
+      setCurrentImage(user.profileImage || "https://placehold.co/150");
     }
-  }, [user]);
+  }
 
   // 2. 이미지 파일 선택 시 (S3 업로드 -> URL 미리보기)
   const handleImageChange = async (e) => {
