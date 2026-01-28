@@ -257,31 +257,75 @@ app.put("/api/posts/:id/like", authMiddleware, async (req, res) => {
       return res.status(404).json({ error: "게시글이 삭제 되었습니다." });
     }
 
-    // 1. 이미 추천을 눌렀는지 확인 (배열 안에 내 ID가 있는가?)
-    const isLiked = post.likes.includes(userId);
+    // 이미 추천을 눌렀는지 확인 (배열 안에 내 ID가 있는가?)
+    const isLiked = post.likes.some((id) => id.toString() === userId);
+    const isDisliked = post.dislikes.some((id) => id.toString() === userId);
 
     if (isLiked) {
-      // 2-1. 이미 눌렀으면 -> 취소 (배열에서 제거)
-      // filter를 써서 내 ID만 뺀 나머지로 다시 채움
-      post.likes = post.likes.filter((id) => id !== userId);
+      // 이미 좋아요 상태면 -> 좋아요 취소
+      post.likes = post.likes.filter((id) => id.toString() !== userId);
     } else {
-      // 2-2. 안 눌렀으면 -> 추가 (배열에 넣기)
+      // 좋아요가 아니면 -> 좋아요 추가
+      if (isDisliked) {
+        // (만약 비추천 상태였다면 비추천 취소)
+        post.dislikes = post.dislikes.filter((id) => id.toString() !== userId);
+      }
       post.likes.push(userId);
     }
 
     await post.save();
 
-    // 3. 변경된 좋아요 수와 상태를 응답
     res.json({
       likesCount: post.likes.length,
-      isLiked: !isLiked, // 현재 상태 (눌렀으면 true, 취소했으면 false)
+      dislikesCount: post.dislikes.length,
+      isLiked: post.likes.some((id) => id.toString() === userId),
+      isDisliked: post.dislikes.some((id) => id.toString() === userId),
     });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "추천 처리 실패" });
+    res.status(500).json({ error: "좋아요 처리 실패" });
   }
 });
+// 게시글 싫어요
+app.put("/api/posts/:id/dislike", authMiddleware, async (req, res) => {
+  try {
+    const postId = req.params.id;
+    const userId = req.user.userId;
 
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res.status(404).json({ error: "게시글이 삭제 되었습니다." });
+    }
+
+    // 이미 추천을 눌렀는지 확인 (배열 안에 내 ID가 있는가?)
+    const isLiked = post.likes.some((id) => id.toString() === userId);
+    const isDisliked = post.dislikes.some((id) => id.toString() === userId);
+
+    if (isDisliked) {
+      // 이미 비추천 상태면 -> 비추천 취소
+      post.dislikes = post.dislikes.filter((id) => id.toString() !== userId);
+    } else {
+      // 비추천이 아니면 -> 비추천 추가
+      if (isLiked) {
+        // (만약 좋아요 상태였다면 좋아요 취소)
+        post.likes = post.likes.filter((id) => id.toString() !== userId);
+      }
+      post.dislikes.push(userId);
+    }
+
+    await post.save();
+
+    res.json({
+      likesCount: post.likes.length,
+      dislikesCount: post.dislikes.length,
+      isLiked: post.likes.some((id) => id.toString() === userId),
+      isDisliked: post.dislikes.some((id) => id.toString() === userId),
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "비추천 처리 실패" });
+  }
+});
 
 
 // 회원 상세

@@ -1,18 +1,18 @@
 import { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import CommentForm from '../components/CommentForm';
-import { useNavigate } from 'react-router-dom'; // navigate 추가
 
 function PostDetail({ user }) {
   const navigate = useNavigate();
   const { id } = useParams(); // URL에서 id 가져오기
   const [data, setData] = useState(null);
-
   const [activeReplyId, setActiveReplyId] = useState(null);
 
-  // 좋아요 상태 관리 (별도로 빼서 관리하면 편함)
+  // 좋아요 상태 관리
   const [likesCount, setLikesCount] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
+  const [dislikesCount, setDislikesCount] = useState(0);
+  const [isDisliked, setIsDisliked] = useState(false);
 
   // const user = JSON.parse(localStorage.getItem("user"));
 
@@ -29,41 +29,65 @@ function PostDetail({ user }) {
       .then(result => {
         setData(result);
         
-        // 1. 데이터 불러올 때 좋아요 상태 초기화
-        // post.likes 배열에 내 ID가 있는지 확인
-        if (result.post.likes && user?.id) {
-           setIsLiked(result.post.likes.includes(user.id));
-           setLikesCount(result.post.likes.length);
+        // 초기 상태 설정 (좋아요 & 비추천)
+        const likes = result.post.likes || [];
+        const dislikes = result.post.dislikes || [];
+        
+        setLikesCount(likes.length);
+        setDislikesCount(dislikes.length);
+
+        if (user?.id) {
+           setIsLiked(likes.includes(user.id));
+           setIsDisliked(dislikes.includes(user.id));
         } else {
-           // 로그인을 안 했거나 likes가 없으면
-           setLikesCount(result.post.likes ? result.post.likes.length : 0);
            setIsLiked(false);
+           setIsDisliked(false);
         }
       });
   }, [id, user?.id]);
 
   // 좋아요 버튼 클릭 핸들러
   const handleLike = async () => {
-    // 로그인 체크
     const token = localStorage.getItem("token");
-    if (!token) {
-      alert("로그인이 필요합니다.");
-      return;
-    }
+    if (!token) return alert("로그인이 필요합니다.");
 
     try {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/api/posts/${id}/like`, {
-        method: "PUT", // 서버랑 맞춤
-        headers: {
-          "Authorization": `Bearer ${token}` // 토큰 필수
-        }
+        method: "PUT",
+        headers: { "Authorization": `Bearer ${token}` }
       });
 
       if (response.ok) {
         const result = await response.json();
-        // 2. 서버 응답값으로 화면 즉시 업데이트 (새로고침 X)
+        // 🚨 중요: 4가지 상태를 모두 업데이트해야 서로 꼬이지 않음
         setLikesCount(result.likesCount);
+        setDislikesCount(result.dislikesCount);
         setIsLiked(result.isLiked);
+        setIsDisliked(result.isDisliked);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // ✅ 4. 비추천 버튼 핸들러 (새로 추가됨)
+  const handleDislike = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return alert("로그인이 필요합니다.");
+
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/posts/${id}/dislike`, {
+        method: "PUT",
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        // 여기도 4가지 상태 모두 업데이트
+        setLikesCount(result.likesCount);
+        setDislikesCount(result.dislikesCount);
+        setIsLiked(result.isLiked);
+        setIsDisliked(result.isDisliked);
       }
     } catch (error) {
       console.error(error);
@@ -115,20 +139,40 @@ function PostDetail({ user }) {
            <span>{post.author.nickname}</span>
            <span>조회 {post.views}</span>
            {/* 좋아요 버튼 위치 */}
-           <span style={{ marginLeft: '10px' }}>
+           {/* ✅ 5. 버튼 UI 영역 */}
+           <span style={{ marginLeft: '15px', display: 'inline-flex', gap: '10px' }}>
+             {/* 좋아요 버튼 (빨강) */}
              <button 
                onClick={handleLike}
                style={{
-                 background: isLiked ? '#ff6b6b' : 'white', // 눌렀으면 빨강, 아니면 흰색
+                 background: isLiked ? '#ff6b6b' : 'white',
                  color: isLiked ? 'white' : '#ff6b6b',
                  border: '1px solid #ff6b6b',
                  borderRadius: '20px',
                  padding: '5px 12px',
                  cursor: 'pointer',
-                 fontWeight: 'bold'
+                 fontWeight: 'bold',
+                 transition: '0.2s'
                }}
              >
                👍 추천 {likesCount}
+             </button>
+
+             {/* 비추천 버튼 (파랑/회색) */}
+             <button 
+               onClick={handleDislike}
+               style={{
+                 background: isDisliked ? '#4dabf7' : 'white',
+                 color: isDisliked ? 'white' : '#4dabf7',
+                 border: '1px solid #4dabf7',
+                 borderRadius: '20px',
+                 padding: '5px 12px',
+                 cursor: 'pointer',
+                 fontWeight: 'bold',
+                 transition: '0.2s'
+               }}
+             >
+               👎 비추 {dislikesCount}
              </button>
            </span>
         </div>
