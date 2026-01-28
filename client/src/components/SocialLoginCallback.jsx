@@ -27,34 +27,36 @@ function SocialLoginCallback({ provider, setUser }) {
     if (code) {
       console.log(`${provider} 로그인 시도 중... code: ${code}`);
 
+      const API_URL = import.meta.env.VITE_API_URL;
+
       // 2. 백엔드 API 주소 동적 생성 (/api/auth/google, /api/auth/naver 등)
-      fetch(`${import.meta.env.VITE_API_URL}/api/auth/${provider}`, {
+      fetch(`${API_URL}/api/auth/${provider}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         // 네이버는 state가 필수고, 구글은 무시하니까 그냥 같이 보내도 상관없음!
-        body: JSON.stringify({ code, state }), 
+        body: JSON.stringify({ code, state }),
       })
       .then((res) => res.json())
       .then((data) => {
         if (data.token) {
-          // 3. 로그인 성공 처리 (공통)
           localStorage.setItem("token", data.token);
           localStorage.setItem("user", JSON.stringify(data.user));
           setUser(data.user);
           alert(`${provider} 로그인 성공!`);
-          navigate("/"); // 메인으로 이동
+          navigate("/");
         } else {
-          alert("로그인 실패");
+          // 백엔드에서 보낸 "이미 가입된..." 에러 메시지가 여기서 뜹니다!
+          alert(data.error || "로그인 실패"); 
           navigate("/login");
         }
       })
       .catch((err) => {
         console.error("소셜 로그인 에러", err);
-        alert("에러가 발생했습니다.");
+        alert("서버 통신 중 에러가 발생했습니다.");
         navigate("/login");
       });
     }
-  }, [provider, navigate, setUser, location]); // 의존성 배열 꼼꼼히
+  }, [provider, navigate, setUser, location]);
 
   return (
     <div style={{ textAlign: "center", marginTop: "100px" }}>

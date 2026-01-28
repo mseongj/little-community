@@ -31,10 +31,11 @@ async function handleSocialLogin(res, userInfo) {
         provider,
       });
     } else {
-      // ⚠️ 이미 가입된 이메일인데, 다른 플랫폼으로 가입된 경우 체크 (선택사항)
+      // 플랫폼(provider)이 다르면 에러 뱉기!
       if (user.provider !== provider) {
-        // 예를 들어 구글로 가입했는데 네이버로 또 로그인하면?
-        // 그냥 넘어가도 되고, 에러를 띄워도 됩니다. 여기선 편의상 그냥 로그인 시킵니다.
+        return res.status(409).json({
+          error: `이미 ${user.provider} 계정으로 가입된 이메일입니다. ${user.provider}로 로그인해주세요.`,
+        });
       }
     }
 
@@ -299,6 +300,24 @@ app.put("/api/users/profile", authMiddleware, async (req, res) => {
       { nickname, profileImage },
       { new: true },
     ).select("-password"); // 비밀번호는 보안상 빼고 돌려줌
+
+    await Post.updateMany(
+      { "author.id": userId },
+      {
+        $set: { "author.nickname": nickname },
+      },
+    );
+
+    await Comment.updateMany(
+      { "author.id": userId },
+      {
+        $set: { "author.nickname": nickname },
+      },
+    );
+
+    console.log(
+      `♻️ ${updatedUser.nickname}님의 닉네임 변경 -> 게시글/댓글 동기화 완료`,
+    );
 
     res.json(updatedUser);
   } catch (err) {
