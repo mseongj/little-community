@@ -104,7 +104,7 @@ app.get(`/api/posts`, async (req, res) => {
 
     const posts = await Post.find(searchCondition)
       .sort({ createdAt: -1 })
-      .select("title author createdAt views likes")
+      .select("title author createdAt views likes dislikes")
       .limit(limit)
       .skip(offset);
 

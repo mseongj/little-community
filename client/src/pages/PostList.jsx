@@ -93,7 +93,12 @@ function PostList() {
             <div style={{ fontSize: '0.85rem', color: '#666', display: 'flex', gap: '10px' }}>
               <span>✍️ {post.author.nickname}</span>
               <span>👀 {post.views}</span>
-              <span>👍 {post.likes ? post.likes.length : 0}</span>
+              <span style={{ color: '#ff6b6b' }}>
+                👍 {post.likes ? post.likes.length : 0}
+              </span>
+              <span style={{ color: '#4dabf7' }}>
+                👎 {post.dislikes ? post.dislikes.length : 0}
+              </span>
               <span>📅 {new Date(post.createdAt).toLocaleDateString()}</span>
             </div>
           </div>
