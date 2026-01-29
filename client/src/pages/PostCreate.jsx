@@ -12,6 +12,15 @@ function PostCreate() {
   const [isUploading, setIsUploading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const getTextLength = (htmlContent) => {
+    const tmp = document.createElement('div');
+    tmp.innerHTML = htmlContent;
+    return tmp.textContent.length || 0;
+  };
+
+  const currentLength = getTextLength(content); // 현재 글자 수
+  const MAX_LENGTH = 4500;
+
   const handleImageUpload = useCallback(() => {
     const input = document.createElement('input');
     input.setAttribute('type', 'file');
@@ -61,6 +70,12 @@ function PostCreate() {
       alert("제목과 내용을 입력해주세요.");
       return;
     }
+
+    if (content.length > MAX_LENGTH) {
+      alert(`내용이 너무 깁니다. (현재 ${content.length}자 / 최대 ${MAX_LENGTH}자)`);
+      return;
+    }
+
     // 로컬 스토리지에서 토큰 꺼내기
     const token = localStorage.getItem("token");
     if (!token) {
@@ -108,7 +123,7 @@ function PostCreate() {
       setIsSubmitting(false);
     }
   }
-
+    
   return (
     <div style={{ padding: "20px" }}>
       <h2>글쓰기</h2>
@@ -133,13 +148,17 @@ function PostCreate() {
         onChange={setContent}
         onImageUpload={handleImageUpload} // 핸들러 전달
       />
+      {/* 글자 수 카운터 UI */}
+      <div style={{ textAlign: 'right', marginTop: '10px', fontSize: '0.9rem', color: currentLength > MAX_LENGTH ? 'red' : '#666', fontWeight: currentLength > MAX_LENGTH ? 'bold' : 'normal' }}>
+        {currentLength} / {MAX_LENGTH} 자 (서식 포함)
+      </div>
 
       <div style={{ textAlign: 'right', marginTop: '20px' }}>
         <button onClick={() => navigate(-1)} style={{ marginRight: '10px', padding: '10px 20px', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>취소</button>
         <button 
           onClick={handleSubmit} 
-          // ✅ 4. 업로드 중이거나 제출 중이면 클릭 금지
-          disabled={isUploading || isSubmitting}
+          // 업로드 중이거나 제출 중이면 클릭 금지 || 컨텐츠의 길이가 5000자 초과면 클릭 금지
+          disabled={isUploading || isSubmitting || content.length > MAX_LENGTH}
           style={{ 
             padding: '10px 20px', 
             // 상태에 따라 색상 변경 (회색/파란색)
@@ -158,7 +177,5 @@ function PostCreate() {
     </div>
   )
 }
-
-
 
 export default PostCreate;
