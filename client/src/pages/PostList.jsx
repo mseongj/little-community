@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import SkeletonPost from '../components/SkeletonPost';
 
 function PostList() {
   const location = useLocation();
@@ -8,29 +9,41 @@ function PostList() {
   const urlKeyword = queryParams.get("keyword") || "";
 
   // 1. 기존 state
-  const [keyword, setKeyword] = useState(urlKeyword);
   const [page, setPage] = useState(1);
   const [posts, setPosts] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [keyword, setKeyword] = useState(urlKeyword);
   const [prevUrlKeyword, setPrevUrlKeyword] = useState(urlKeyword);
+  const [prevPage, setPrevPage] = useState(page);
 
+  // 1. URL 검색어가 바뀌었을 때
   if (urlKeyword !== prevUrlKeyword) {
-    setPrevUrlKeyword(urlKeyword); // 기준값 업데이트
-    setKeyword(urlKeyword);        // 입력창 업데이트
-    setPage(1);                    // 페이지 리셋
+    setPrevUrlKeyword(urlKeyword);
+    setKeyword(urlKeyword);
+    setPage(1);       // 1페이지로 리셋
+    setIsLoading(true); // 🔥 로딩 시작!
+  }
+  // 2. 페이지 번호가 바뀌었을 때
+  if (page !== prevPage) {
+    setPrevPage(page);
+    setIsLoading(true); // 🔥 로딩 시작!
   }
 
   useEffect(() => {
-    // ✅ 4. 'searchQuery' 상태 대신 'urlKeyword'를 직접 사용해서 fetch
-    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+    const API_URL = import.meta.env.VITE_API_URL;
     
     fetch(`${API_URL}/api/posts?page=${page}&keyword=${urlKeyword}`)
       .then((res) => res.json())
       .then((data) => {
         setPosts(data.posts);
         setTotalPages(data.totalPages);
+        setIsLoading(false);
       })
-      .catch((err) => console.error(err));
+      .catch((err) => {
+        console.error(err);
+        setIsLoading(false);
+      });
   }, [page, urlKeyword]); // 의존성 배열에 urlKeyword 넣기
 
   // 검색 핸들러
@@ -38,7 +51,7 @@ function PostList() {
     // ✅ 5. state를 바꾸는 게 아니라, URL을 변경함!
     // navigate를 쓰면 페이지 이동 효과가 남
     navigate(`/?keyword=${keyword}`);
-    setPage(1);
+    // setPage(1);
   };
   
   const handleKeyDown = (e) => {
@@ -85,7 +98,11 @@ function PostList() {
 
       {/* 게시글 리스트 렌더링 */}
       <div className="post-list">
-        {posts.map((post) => (
+        {isLoading ? (
+           // Array.from({ length: 5 }) -> 가짜 배열 5개 생성
+           Array.from({ length: 5 }).map((_, i) => <SkeletonPost key={i} />)
+        ) : (
+           posts.map((post) => (
           <div key={post._id} style={{ border: '1px solid #ddd', padding: '15px', marginBottom: '10px', borderRadius: '8px', background: 'var(--bg-container)' }}>
             <Link to={`/posts/${post._id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
               <h3 style={{ margin: '0 0 10px 0', color: 'var(--text-main)' }}>{post.title}</h3>
@@ -102,7 +119,8 @@ function PostList() {
               <span>📅 {new Date(post.createdAt).toLocaleDateString()}</span>
             </div>
           </div>
-        ))}
+        ))
+        )}
       </div>
 
       {/* 페이지네이션 버튼 영역 */}
