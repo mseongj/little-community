@@ -123,7 +123,7 @@ function PostCreate() {
       setIsSubmitting(false);
     }
   }
-    
+
   return (
     <div style={{ padding: "20px" }}>
       <h2>글쓰기</h2>
@@ -150,7 +150,7 @@ function PostCreate() {
       />
       {/* 글자 수 카운터 UI */}
       <div style={{ textAlign: 'right', marginTop: '10px', fontSize: '0.9rem', color: currentLength > MAX_LENGTH ? 'red' : '#666', fontWeight: currentLength > MAX_LENGTH ? 'bold' : 'normal' }}>
-        {currentLength} / {MAX_LENGTH} 자 (서식 포함)
+        {currentLength} / {MAX_LENGTH} 자
       </div>
 
       <div style={{ textAlign: 'right', marginTop: '20px' }}>
