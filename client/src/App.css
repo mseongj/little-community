@@ -143,3 +143,236 @@ button {
   animation: skeleton-loading 1.5s infinite ease-in-out;
   border-radius: 4px;
 }
+
+.theme-toggle-wrapper {
+  position: relative;
+  width: 50px;
+  height: 26px;
+  background-color: #eee; /* 라이트 모드 배경 (연회색) */
+  border-radius: 50px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 2px;
+  transition: background-color 0.3s ease;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* 다크 모드일 때 배경색 (진한 회색) */
+.theme-toggle-wrapper.dark {
+  background-color: #333;
+}
+
+/* 움직이는 원 (Thumb) */
+.toggle-thumb {
+  width: 22px;
+  height: 22px;
+  background-color: white;
+  border-radius: 50%;
+  position: absolute;
+  top: 2px;
+  left: 2px; /* 라이트모드 위치 (왼쪽) */
+  transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 14px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* 다크 모드일 때 원의 위치 이동 (오른쪽으로) */
+.theme-toggle-wrapper.dark .toggle-thumb {
+  transform: translateX(24px); /* 50px(전체) - 2px(패딩) - 22px(원) - 2px(오른쪽여백) */
+  background-color: #555; /* 다크모드일 때 원 색상 */
+  color: white;
+}
+
+
+/* 헤더 (Header) 스타일 */
+.main-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 30px;
+  border-bottom: 1px solid var(--border-color);
+  background-color: var(--bg-container);
+  transition: background-color 0.3s, border-color 0.3s;
+  height: 60px; /* 높이 고정 */
+}
+
+.logo-text {
+  text-decoration: none;
+  color: var(--text-main);
+  font-size: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  white-space: nowrap; /* 줄바꿈 금지 */
+}
+
+.right-controls {
+  display: flex;
+  align-items: center;
+  gap: 15px; /* 요소 간 간격 */
+}
+
+.nav-menu {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+/* 프로필 이미지 & 닉네임 */
+.user-profile-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: var(--text-main);
+  gap: 8px;
+}
+
+.header-profile-img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--border-color);
+}
+
+.user-nickname {
+  font-weight: bold;
+}
+
+/* 버튼들 */
+.logout-btn {
+  padding: 6px 12px;
+  cursor: pointer;
+  background: #ff6b6b;
+  border: none;
+  border-radius: 4px;
+  color: white;
+  white-space: nowrap;
+}
+
+.login-link {
+  text-decoration: none;
+  color: var(--text-main);
+  margin-right: 15px;
+  white-space: nowrap;
+}
+
+.signup-btn {
+  padding: 8px 16px;
+  background-color: var(--primary-color);
+  color: white;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+  .app-container h1 {
+    font-size: 1.5rem;
+  }
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* 📱  모바일 화면 (폭 768px 이하) 전용 스타일 */
+@media (max-width: 768px) {
+  
+  /* 1. 공통 컨테이너 여백 줄이기 */
+  .post-create-container, 
+  .post-list {
+    padding: 10px !important;
+  }
+
+  /* 2. 헤더 최적화 (.main-header 클래스 사용) */
+  .main-header {
+    padding: 10px 15px; /* 좌우 여백 줄임 */
+    height: 60px; /* 높이 고정 */
+    /* flex 관련 속성은 기본 CSS에서 상속받으므로 padding만 조절 */
+  }
+
+  /* 로고 크기 축소 */
+  .logo-text {
+    font-size: 1.2rem;
+  }
+
+  /* 우측 컨트롤 영역 간격 좁히기 */
+  .right-controls {
+    gap: 10px;
+  }
+  
+  .nav-menu {
+    gap: 8px;
+  }
+
+  /* 닉네임 숨기기 (공간 부족하면 프사만 보여줌) */
+  .user-nickname {
+    display: none; 
+  }
+
+  /* 버튼 크기 및 폰트 줄이기 */
+  .logout-btn, 
+  .signup-btn {
+    padding: 5px 10px;
+    font-size: 0.8rem;
+  }
+  
+  .login-link {
+    font-size: 0.8rem;
+    margin-right: 8px;
+  }
+
+  /* 다크모드 토글도 모바일엔 살짝 작게 */
+  .theme-toggle-wrapper {
+    width: 40px;
+    height: 22px;
+  }
+  
+  .toggle-thumb {
+    width: 18px;
+    height: 18px;
+    font-size: 10px; /* 이모지 크기 조절 */
+  }
+  
+  .theme-toggle-wrapper.dark .toggle-thumb {
+    transform: translateX(18px); /* 이동 거리 재계산 (40 - 2 - 18 - 2) */
+  }
+
+  .app-container h1 {
+    font-size: 1rem;
+  }
+
+  .app-container a button {
+    padding: 5px 10px !important;
+    font-size: 0.8rem;
+  }
+
+  /* 3. 게시글 목록 아이템 (PostList) */
+  .post-list > div {
+    display: flex;
+    flex-direction: column; /* 정보를 세로로 배치 */
+    align-items: flex-start;
+  }
+
+  /* 제목 폰트 살짝 키우기 */
+  .post-list h3 {
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+  }
+
+  /* 작성자, 조회수 등 정보 */
+  .post-list div[style*="font-size: 0.85rem"] {
+    font-size: 0.8rem !important;
+    flex-wrap: wrap; /* 정보가 많으면 다음 줄로 넘김 */
+    gap: 8px;
+  }
+  
+  /* 4. 글쓰기 페이지 에디터 높이 조정 */
+  .quill {
+    height: 300px !important; /* 모바일 키보드 공간 확보를 위해 높이 줄임 */
+  }
+}

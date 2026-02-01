@@ -60,7 +60,7 @@ function PostList() {
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '5px', marginBottom: '20px' }}>
         <h1>커뮤니티 게시판</h1>
         
         {/* ✅ 글쓰기 버튼 추가 */}
