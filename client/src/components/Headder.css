@@ -159,6 +159,7 @@
 @media (max-width: 768px) {
   .main-header {
     padding: 0 15px; /* 좌우 여백 줄임 */
+    height: 60px; /* 높이 고정 */
   }
 
   .logo-text {
